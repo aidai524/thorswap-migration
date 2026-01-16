@@ -164,7 +164,9 @@ export default function useContractConfig(): UseContractConfigReturn {
           deadlineYThor: Big(results[5]?.result || "0")
             .mul(1000)
             .toString(),
-          ratio10M: Big(results[6].result).div(1e18).toString(),
+          ratio10M: Big(results[6]?.result || "0")
+            .div(1e18)
+            .toString(),
           ratio3M: Big(results[7]?.result || "0")
             .div(1e18)
             .toString(),
