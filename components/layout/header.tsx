@@ -1,24 +1,25 @@
-"use client"
+"use client";
 
-import Link from "next/link"
-import { usePathname } from "next/navigation"
-import { cn } from "@/lib/utils"
-import { WalletButton } from "@/components/wallet/wallet-button"
-import { NetworkIndicator } from "@/components/wallet/network-indicator"
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
-import { Button } from "@/components/ui/button"
-import { Menu } from "lucide-react"
-import { useState } from "react"
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { cn } from "@/lib/utils";
+import { WalletButton } from "@/components/wallet/wallet-button";
+import { NetworkIndicator } from "@/components/wallet/network-indicator";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { Button } from "@/components/ui/button";
+import { Menu } from "lucide-react";
+import { useState } from "react";
 
 const navItems = [
   { href: "/migrate", label: "Migrate" },
   { href: "/stake", label: "Stake" },
   { href: "/rewards", label: "Rewards" },
-]
+  { href: "/history", label: "History" }
+];
 
 export function Header() {
-  const pathname = usePathname()
-  const [open, setOpen] = useState(false)
+  const pathname = usePathname();
+  const [open, setOpen] = useState(false);
 
   return (
     <header className="sticky top-0 z-50 border-b border-border bg-background/80 backdrop-blur-xl">
@@ -26,7 +27,11 @@ export function Header() {
         {/* Logo */}
         <Link href="/" className="flex items-center gap-2">
           <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary">
-            <svg viewBox="0 0 24 24" className="h-5 w-5 text-primary-foreground" fill="currentColor">
+            <svg
+              viewBox="0 0 24 24"
+              className="h-5 w-5 text-primary-foreground"
+              fill="currentColor"
+            >
               <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" />
             </svg>
           </div>
@@ -43,7 +48,7 @@ export function Header() {
                 "rounded-lg px-4 py-2 text-sm font-medium transition-colors",
                 pathname === item.href
                   ? "bg-secondary text-foreground"
-                  : "text-muted-foreground hover:bg-secondary/50 hover:text-foreground",
+                  : "text-muted-foreground hover:bg-secondary/50 hover:text-foreground"
               )}
             >
               {item.label}
@@ -75,7 +80,7 @@ export function Header() {
                       "rounded-lg px-4 py-3 text-base font-medium transition-colors",
                       pathname === item.href
                         ? "bg-secondary text-foreground"
-                        : "text-muted-foreground hover:bg-secondary/50 hover:text-foreground",
+                        : "text-muted-foreground hover:bg-secondary/50 hover:text-foreground"
                     )}
                   >
                     {item.label}
@@ -87,5 +92,5 @@ export function Header() {
         </div>
       </div>
     </header>
-  )
+  );
 }

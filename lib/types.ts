@@ -1,50 +1,44 @@
-export type Network = "ethereum" | "base"
+export type ThorPhase = "10M" | "3M";
 
-export type TokenSymbol = "THOR" | "yTHOR" | "METRO" | "USDC"
+export type YThorPhase = "4Y";
 
 export interface Token {
-  symbol: TokenSymbol
-  name: string
-  decimals: number
-  address: string
-  network: Network
-  icon: string
+  symbol: string;
+  name: string;
+  decimals: number;
+  address: string;
+  chainId: number;
+  chainName: string;
+  icon: string;
 }
 
 export interface Position {
-  id: string
-  type: "locked" | "vesting" | "flexible"
-  amount: string
-  token: TokenSymbol
-  startDate: Date
-  endDate: Date
-  claimableRewards: string
-  autocompound: boolean
+  id: string;
+  type: "locked" | "vesting" | "flexible";
+  amount: string;
+  token: string;
+  startDate: Date;
+  endDate: Date;
+  claimableRewards: string;
+  autocompound: boolean;
 }
 
 export interface UnstakeRequest {
-  id: string
-  amount: string
-  requestDate: Date
-  availableDate: Date
-}
-
-export interface MigrationPhase {
-  phase: number
-  lockDuration: string
-  description: string
-  active: boolean
+  id: string;
+  amount: string;
+  requestDate: Date;
+  availableDate: Date;
 }
 
 export interface WalletState {
-  connected: boolean
-  address: string | null
-  network: Network | null
-  balance: Record<TokenSymbol, string>
+  connected: boolean;
+  address: string | null;
+  chainId: number | null;
+  balance: Record<string, string>;
 }
 
 export interface TransactionStatus {
-  status: "idle" | "pending" | "confirmed" | "error"
-  hash?: string
-  message?: string
+  status: "idle" | "pending" | "confirmed" | "error";
+  hash?: string;
+  message?: string;
 }

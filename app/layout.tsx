@@ -1,33 +1,22 @@
-import type React from "react"
-import type { Metadata, Viewport } from "next"
-import { Inter, JetBrains_Mono } from "next/font/google"
-import { Analytics } from "@vercel/analytics/next"
-import "./globals.css"
-
-const _inter = Inter({
-  subsets: ["latin"],
-  variable: "--font-inter",
-})
-
-const _jetbrainsMono = JetBrains_Mono({
-  subsets: ["latin"],
-  variable: "--font-jetbrains",
-})
+import type React from "react";
+import type { Metadata, Viewport } from "next";
+import { Analytics } from "@vercel/analytics/next";
+import "./globals.css";
 
 export const metadata: Metadata = {
   title: "THOR → METRO Migration & Staking",
   description: "Migrate THOR/yTHOR to METRO and stake on Base chain",
-    generator: 'v0.app'
-}
+  generator: "v0.app"
+};
 
 export const viewport: Viewport = {
-  themeColor: "#1a1d24",
-}
+  themeColor: "#1a1d24"
+};
 
 export default function RootLayout({
-  children,
+  children
 }: Readonly<{
-  children: React.ReactNode
+  children: React.ReactNode;
 }>) {
   return (
     <html lang="en">
@@ -36,5 +25,5 @@ export default function RootLayout({
         <Analytics />
       </body>
     </html>
-  )
+  );
 }

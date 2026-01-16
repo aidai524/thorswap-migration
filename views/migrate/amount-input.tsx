@@ -1,22 +1,26 @@
-"use client"
+"use client";
 
-import { Input } from "@/components/ui/input"
-import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 
 interface AmountInputProps {
-  value: string
-  onChange: (value: string) => void
-  maxAmount: string
-  tokenSymbol: string
-  disabled?: boolean
+  value: string;
+  onChange: (value: string) => void;
+  maxAmount: string;
+  tokenSymbol: string;
 }
 
-export function AmountInput({ value, onChange, maxAmount, tokenSymbol, disabled }: AmountInputProps) {
+export function AmountInput({
+  value,
+  onChange,
+  maxAmount,
+  tokenSymbol
+}: AmountInputProps) {
   const handleMaxClick = () => {
-    onChange(maxAmount)
-  }
+    onChange(maxAmount);
+  };
 
-  const presets = [25, 50, 75, 100]
+  const presets = [25, 50, 75, 100];
 
   return (
     <div className="space-y-3">
@@ -26,11 +30,15 @@ export function AmountInput({ value, onChange, maxAmount, tokenSymbol, disabled 
           placeholder="0.00"
           value={value}
           onChange={(e) => onChange(e.target.value)}
-          disabled={disabled}
           className="h-14 pr-24 text-2xl font-medium"
         />
         <div className="absolute right-3 top-1/2 -translate-y-1/2">
-          <Button variant="secondary" size="sm" onClick={handleMaxClick} disabled={disabled}>
+          <Button
+            variant="secondary"
+            size="sm"
+            onClick={handleMaxClick}
+            className="cursor-pointer"
+          >
             MAX
           </Button>
         </div>
@@ -42,9 +50,11 @@ export function AmountInput({ value, onChange, maxAmount, tokenSymbol, disabled 
             key={percent}
             variant="outline"
             size="sm"
-            className="flex-1 bg-transparent"
-            onClick={() => onChange(((Number(maxAmount) * percent) / 100).toString())}
-            disabled={disabled}
+            className="flex-1 bg-transparent cursor-pointer"
+            onClick={() =>
+              onChange(((Number(maxAmount) * percent) / 100).toString())
+            }
+            disabled={false}
           >
             {percent}%
           </Button>
@@ -58,5 +68,5 @@ export function AmountInput({ value, onChange, maxAmount, tokenSymbol, disabled 
         </span>
       </div>
     </div>
-  )
+  );
 }
