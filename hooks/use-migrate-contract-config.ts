@@ -146,22 +146,34 @@ export default function useContractConfig(): UseContractConfigReturn {
         });
 
         const staticConfig: StaticContractConfig = {
-          cap10M: Big(results[0].result)
+          cap10M: Big(results[0]?.result || "0")
             .div(10 ** ThorToken.decimals)
             .toString(),
-          cap3M: Big(results[1].result)
+          cap3M: Big(results[1]?.result || "0")
             .div(10 ** ThorToken.decimals)
             .toString(),
-          capYThor: Big(results[2].result)
+          capYThor: Big(results[2]?.result || "0")
             .div(10 ** YThorToken.decimals)
             .toString(),
-          deadline10M: Big(results[3].result).mul(1000).toString(),
-          deadline3M: Big(results[4].result).mul(1000).toString(),
-          deadlineYThor: Big(results[5].result).mul(1000).toString(),
+          deadline10M: Big(results[3]?.result || "0")
+            .mul(1000)
+            .toString(),
+          deadline3M: Big(results[4]?.result || "0")
+            .mul(1000)
+            .toString(),
+          deadlineYThor: Big(results[5]?.result || "0")
+            .mul(1000)
+            .toString(),
           ratio10M: Big(results[6].result).div(1e18).toString(),
-          ratio3M: Big(results[7].result).div(1e18).toString(),
-          ratioYThor: Big(results[8].result).div(1e18).toString(),
-          migrationStartTime: Big(results[9].result).mul(1000).toString()
+          ratio3M: Big(results[7]?.result || "0")
+            .div(1e18)
+            .toString(),
+          ratioYThor: Big(results[8]?.result || "0")
+            .div(1e18)
+            .toString(),
+          migrationStartTime: Big(results[9]?.result || "0")
+            .mul(1000)
+            .toString()
         };
 
         setStaticConfig(staticConfig);
@@ -205,13 +217,13 @@ export default function useContractConfig(): UseContractConfigReturn {
       });
 
       return {
-        minted10M: Big(results[0].result)
+        minted10M: Big(results[0]?.result || "0")
           .div(10 ** ThorToken.decimals)
           .toString(),
-        minted3M: Big(results[1].result)
+        minted3M: Big(results[1]?.result || "0")
           .div(10 ** ThorToken.decimals)
           .toString(),
-        mintedYThor: Big(results[2].result)
+        mintedYThor: Big(results[2]?.result || "0")
           .div(10 ** YThorToken.decimals)
           .toString()
       };
