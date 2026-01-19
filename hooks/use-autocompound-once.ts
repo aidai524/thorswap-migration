@@ -30,7 +30,11 @@ interface UseAutocompoundOnceReturn {
  *
  * @returns Autocompound function and related state
  */
-export default function useAutocompoundOnce(): UseAutocompoundOnceReturn {
+export default function useAutocompoundOnce({
+  onSuccess
+}: {
+  onSuccess: () => void;
+}): UseAutocompoundOnceReturn {
   const { account, publicClient, walletClient } = useWallet();
   const [autocompounding, setAutocompounding] = useState(false);
   const [estimatedMetroAmount, setEstimatedMetroAmount] = useState<
@@ -48,7 +52,7 @@ export default function useAutocompoundOnce(): UseAutocompoundOnceReturn {
     // If you need V3, use buildSwapDataV3SingleHop with appropriate fee
     return buildSwapDataV3MultiHop({
       tokens: [RewardToken.address, MetroToken.address],
-      fees: [100]
+      fees: [3000]
     });
   }, []);
 
@@ -178,6 +182,7 @@ export default function useAutocompoundOnce(): UseAutocompoundOnceReturn {
           });
           // Reset estimated amount
           setEstimatedMetroAmount(null);
+          onSuccess();
         } else {
           toast({
             title: "Autocompound Failed!",

@@ -42,7 +42,11 @@ export function AutocompoundDialog({
     isEstimatingMetro,
     autocompound,
     estimateMetroAmount
-  } = useAutocompoundOnce();
+  } = useAutocompoundOnce({
+    onSuccess() {
+      onOpenChange(false);
+    }
+  });
 
   const handleSkip = () => {
     onOpenChange(false);
@@ -50,10 +54,10 @@ export function AutocompoundDialog({
 
   // Estimate METRO amount when claimedAmount changes
   useEffect(() => {
-    if (Big(claimableAmount || "0").gt(0)) {
+    if (Big(claimableAmount || "0").gt(0) && open) {
       estimateMetroAmount();
     }
-  }, [claimableAmount]);
+  }, [claimableAmount, open]);
 
   const handleOpenChange = (newOpen: boolean) => {
     if (!newOpen && !autocompounding) {
