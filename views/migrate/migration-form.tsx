@@ -84,7 +84,7 @@ export function MigrationForm({
             <label className="text-sm font-medium">Select Token</label>
             <TokenSelector
               selected={token}
-              onSelect={(token) => set({ token, amount: "0" })}
+              onSelect={(token) => set({ token, amount: "" })}
               tokens={tokens}
             />
           </div>

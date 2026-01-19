@@ -833,5 +833,18 @@ export default [
     ],
     stateMutability: "view",
     type: "function"
-  }
+  },
+  {
+		"inputs": [],
+		"name": "UNSTAKE_DELAY",
+		"outputs": [
+			{
+				"internalType": "uint64",
+				"name": "",
+				"type": "uint64"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	}
 ];

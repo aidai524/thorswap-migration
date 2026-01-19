@@ -22,7 +22,7 @@ export function VestingInfoPanel({ token, config }: VestingInfoPanelProps) {
 
 function ThorVestingInfoPanel({ config }: { config: any }) {
   const { thorPhase, amount, set } = useMigrationStore();
-  const overTime = !config.isStarted;
+  const overTime = !config?.isStarted;
 
   const is10MAvailable = useMemo(() => {
     if (!config || !amount) return false;
@@ -97,7 +97,7 @@ function ThorVestingInfoPanel({ config }: { config: any }) {
 
 function YThorVestingInfoPanel({ config }: { config: any }) {
   const { yThorPhase, set } = useMigrationStore();
-  const overTime = !config.isStarted;
+  const overTime = !config?.isStarted;
   return (
     <div className="space-y-4 rounded-xl border border-border bg-card p-4">
       <div className="flex items-center gap-2">

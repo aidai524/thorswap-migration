@@ -73,7 +73,7 @@ export default function useContractConfig(): UseContractConfigReturn {
   });
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const { publicClient } = useWallet();
+  const { publicClient,account } = useWallet();
   const { setStaticConfig } = useContractConfigStore();
 
   /**
@@ -363,10 +363,10 @@ export default function useContractConfig(): UseContractConfigReturn {
 
   // Auto refresh on initial load and dependency changes
   useEffect(() => {
-    if (publicClient) {
+    if (account?.address) {
       debouncedFetchConfig();
     }
-  }, [publicClient]);
+  }, [account]);
 
   return {
     config,

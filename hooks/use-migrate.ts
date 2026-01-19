@@ -119,7 +119,7 @@ export default function useMigrate(
     }
 
     // Check if migration has started
-    if (!contractConfig.isStarted) {
+    if (!contractConfig?.isStarted) {
       return "Migration has not started yet";
     }
 

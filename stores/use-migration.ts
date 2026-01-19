@@ -13,7 +13,7 @@ const useMigrationStore = create<MigrationState>((set) => ({
   thorPhase: "10M",
   yThorPhase: "4Y",
   token: "THOR",
-  amount: "0",
+  amount: "",
   set: (params) => set(() => ({ ...params }))
 }));
 

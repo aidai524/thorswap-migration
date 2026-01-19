@@ -152,104 +152,26 @@ export default function useUnstake({
       setIsEstimatingUnstake(true);
 
       try {
-        const amountInWei = parseUnits(Big(amount).toFixed(18), 18);
-
-        // Simulate requestUnstake call to verify it would succeed
-        // Note: requestUnstake doesn't return values, but we can verify the call succeeds
-        await publicClient.simulateContract({
-          account: account.address as `0x${string}`,
+        const currentTimestamp = await publicClient.getBlock({
+          blockTag: "latest"
+        });
+        const delay = await publicClient.readContract({
           address: xMetroToken.address as `0x${string}`,
           abi: xMetroAbi,
-          functionName: "requestUnstake",
-          args: [amountInWei]
+          functionName: "UNSTAKE_DELAY",
+        
         });
 
+      
         // Check if request was aborted
         if (abortControllerRef.current?.signal.aborted) {
           return;
         }
-
-        // Since requestUnstake doesn't return values, we need to query the unlock delay
-        // and calculate the unlock time. Let's try to get the current block timestamp
-        // and add the unlock delay (if available) or use a default delay
-        try {
-          // Get current block to get timestamp
-          const block = await publicClient.getBlock();
-          const currentTimestamp = Number(block.timestamp);
-
-          // Check if request was aborted
-          if (abortControllerRef.current?.signal.aborted) {
-            return;
-          }
-
-          // Try to query unlock delay from contract (if available)
-          // For now, we'll use a default delay or query existing unstake requests to infer delay
-          // Let's check if there are existing unstake requests to infer the delay
-          let unlockDelay = 7 * 24 * 60 * 60; // Default: 7 days in seconds
-
-          try {
-            // Query unstakeRequestCount to see if user has existing requests
-            const requestCount = await publicClient.readContract({
-              address: xMetroToken.address as `0x${string}`,
-              abi: xMetroAbi,
-              functionName: "unstakeRequestCount",
-              args: [account.address as `0x${string}`]
-            });
-
-            // Check if request was aborted
-            if (abortControllerRef.current?.signal.aborted) {
-              return;
-            }
-
-            // If user has existing requests, query one to get unlock time pattern
-            if (requestCount > BigInt(0)) {
-              try {
-                const existingRequest = await publicClient.readContract({
-                  address: xMetroToken.address as `0x${string}`,
-                  abi: xMetroAbi,
-                  functionName: "unstakeRequest",
-                  args: [account.address as `0x${string}`, BigInt(0)]
-                });
-
-                // Check if request was aborted
-                if (abortControllerRef.current?.signal.aborted) {
-                  return;
-                }
-
-                const existingUnlockTime = Number(existingRequest[1] as bigint);
-                if (existingUnlockTime > currentTimestamp) {
-                  // Calculate delay from existing request
-                  unlockDelay = existingUnlockTime - currentTimestamp;
-                }
-              } catch (err) {
-                // If querying existing request fails, use default delay
-                console.debug("Failed to query existing unstake request:", err);
-              }
-            }
-          } catch (err) {
-            // If querying request count fails, use default delay
-            console.debug("Failed to query unstake request count:", err);
-          }
-
-          // Calculate unlock time
-          const unlockTime = currentTimestamp + unlockDelay;
-
-          // For METRO amount, requestUnstake converts xMETRO to METRO
-          // The conversion rate depends on the contract's exchange rate
-          // Since we can't get this from simulateContract, we'll use the input amount as estimate
-          // (assuming 1:1 ratio, which may need adjustment based on actual contract logic)
-          setEstimatedMetroAmount(amount);
-          setEstimatedUnlockTime(unlockTime);
-        } catch (queryErr) {
-          // Check if request was aborted
-          if (abortControllerRef.current?.signal.aborted) {
-            return;
-          }
-          console.error("Failed to query unlock time:", queryErr);
-          setEstimatedMetroAmount(null);
-          setEstimatedUnlockTime(null);
-        }
+       
+        setEstimatedMetroAmount(amount);
+        setEstimatedUnlockTime(Big(currentTimestamp.timestamp).add(delay).toNumber());
       } catch (err: any) {
+        console.log(err)
         // Check if request was aborted
         if (abortControllerRef.current?.signal.aborted) {
           return;
