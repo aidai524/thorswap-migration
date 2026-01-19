@@ -179,6 +179,7 @@ export default function useContractConfig(): UseContractConfigReturn {
         };
 
         setStaticConfig(staticConfig);
+
         return staticConfig;
       } catch (err) {
         console.error("Error fetching static config:", err);
@@ -256,7 +257,7 @@ export default function useContractConfig(): UseContractConfigReturn {
       const deadlineYThor = Big(staticCfg.deadlineYThor);
       const migrationStartTime = Big(staticCfg.migrationStartTime);
 
-      return {
+      const _config: ContractConfig = {
         available10M,
         available3M,
         availableYThor,
@@ -268,6 +269,8 @@ export default function useContractConfig(): UseContractConfigReturn {
         ratioYThor: staticCfg.ratioYThor,
         isStarted: migrationStartTime.gt(now)
       };
+      console.log("migrate contract config", _config);
+      return _config;
     },
     []
   );
