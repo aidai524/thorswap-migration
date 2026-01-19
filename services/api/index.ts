@@ -9,7 +9,7 @@ export interface RewardRecordsResponse {
   data: RewardRecord[];
   total?: number;
   page?: number;
-  page_size?: number;
+  total_page?: number;
 }
 
 export interface GetRewardRecordsParams {
@@ -42,7 +42,7 @@ class DollaService {
     params: GetRewardRecordsParams
   ): Promise<RewardRecordsResponse> {
     const { address, page = 1, page_size = 10 } = params;
-    const response = await this.api.get<RewardRecordsResponse>(
+    const response = await this.api.get<{data: RewardRecordsResponse}>(
       "/v1/reward/records",
       {
         params: {
@@ -52,7 +52,7 @@ class DollaService {
         }
       }
     );
-    return response.data;
+    return response.data.data;
   }
 }
 

@@ -84,10 +84,10 @@ export default function useRewardsHistory(
             page: targetPage,
             page_size: targetPageSize
           });
-
+ 
         setRecords(response.data || []);
         setTotal(response.total || 0);
-        setCurrentPage(response.page || targetPage);
+        setCurrentPage(response.total_page || targetPage);
         if (newPageSize !== undefined) {
           setPageSize(targetPageSize);
         }

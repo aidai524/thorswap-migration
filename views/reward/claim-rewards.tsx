@@ -93,7 +93,7 @@ export function ClaimRewards() {
                 className="h-[40px] cursor-pointer"
                 onClick={() => setShowAutocompoundDialog(true)}
               >
-                Autocompound Rewards
+               Compound Rewards
               </Button>
               <div>
                 <ButtonWithAuth

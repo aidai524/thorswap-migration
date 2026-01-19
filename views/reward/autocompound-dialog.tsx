@@ -75,7 +75,7 @@ export function AutocompoundDialog({
         }}
       >
         <DialogHeader>
-          <DialogTitle>Continue Autocompound?</DialogTitle>
+          <DialogTitle>Continue Compound?</DialogTitle>
           <DialogDescription>
             Swap claimed USDC rewards to METRO and stake automatically
           </DialogDescription>
@@ -150,7 +150,7 @@ export function AutocompoundDialog({
               {autocompounding ? (
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
               ) : (
-                "Autocompound"
+                "Compound"
               )}
             </ButtonWithAuth>
           </div>

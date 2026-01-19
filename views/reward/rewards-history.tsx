@@ -170,7 +170,7 @@ export function RewardsHistory() {
                   const txHash =
                     record.txHash || record.tx_hash || record.hash || "";
                   const amount = record.amount || record.reward_amount || "0";
-                  const type = record.type || record.action_type || "claim";
+                  const type = record.category === 1? "claim" : "compounded";
                   const date =
                     record.date || record.created_at || record.timestamp || "";
 
@@ -182,21 +182,21 @@ export function RewardsHistory() {
                       <div className="flex items-center gap-3">
                         <Badge
                           variant={
-                            type === "claim" || type === "claimed"
+                            type === "claim" 
                               ? "default"
                               : "secondary"
                           }
                           className="capitalize"
                         >
-                          {type === "claim" || type === "claimed"
+                          {type === "claim"
                             ? "Claimed"
-                            : type === "autocompound" || type === "compounded"
+                            : type === "compounded"
                             ? "Compounded"
                             : type}
                         </Badge>
                         <div>
                           <p className="font-medium">
-                            ${formatNumber(amount, 2, true)} USDC
+                            {formatNumber(amount, 2, true)} USDC
                           </p>
                           <p className="text-xs text-muted-foreground">
                             {formatDate(date)}
