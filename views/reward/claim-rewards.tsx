@@ -81,7 +81,7 @@ export function ClaimRewards() {
                 {isLoadingClaimable ? (
                   <Loader2 className="mx-auto h-8 w-8 animate-spin" />
                 ) : (
-                  `$${formatNumber(claimableAmount || 0, 2, true)}`
+                  `${formatNumber(claimableAmount || 0, 2, true)}`
                 )}
               </p>
               <p className="mt-1 text-sm text-muted-foreground">USDC</p>
