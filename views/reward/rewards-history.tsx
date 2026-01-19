@@ -170,7 +170,7 @@ export function RewardsHistory() {
                   const txHash =
                     record.txHash || record.tx_hash || record.hash || "";
                   const amount = record.amount || record.reward_amount || "0";
-                  const type = record.category === 1? "claim" : "compounded";
+                  const type = record.category === 1? "claim" :record.category === 2 ? "autocompounded" : "compounded";
                   const date =
                     record.date || record.created_at || record.timestamp || "";
 
@@ -192,6 +192,8 @@ export function RewardsHistory() {
                             ? "Claimed"
                             : type === "compounded"
                             ? "Compounded"
+                            : type === "autocompounded"
+                            ? "Autocompounded"
                             : type}
                         </Badge>
                         <div>
