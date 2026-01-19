@@ -159,7 +159,6 @@ export default function useWithdraw(): UseWithdrawReturn {
       });
       return;
     }
-
     if (!walletClient || !publicClient) {
       toast({
         title: "Withdraw Failed!",
@@ -168,13 +167,11 @@ export default function useWithdraw(): UseWithdrawReturn {
       });
       return;
     }
-
     const amountKey =
       type === "yTHOR"
         ? "ythor"
         : (type.toLowerCase() as keyof typeof withdrawableAmounts);
     const amount = withdrawableAmounts[amountKey];
-
     if (!amount || Big(amount).lte(0)) {
       toast({
         title: "Withdraw Failed!",
@@ -183,9 +180,7 @@ export default function useWithdraw(): UseWithdrawReturn {
       });
       return;
     }
-
     setLoading((prev) => ({ ...prev, [amountKey]: true }));
-
     try {
       // Estimate gas
       let gasEstimate: bigint | undefined;
@@ -200,14 +195,12 @@ export default function useWithdraw(): UseWithdrawReturn {
       } catch (err) {
         console.log("Gas estimation failed:", err);
       }
-
       // Show pending toast
       toast({
         title: "Withdraw Pending!",
         description: "Confirm the transaction in your wallet...",
         variant: "default"
       });
-
       // Send transaction
       const hash = await walletClient.writeContract({
         address: xMetroToken.address as `0x${string}`,
@@ -216,24 +209,21 @@ export default function useWithdraw(): UseWithdrawReturn {
         args: [BigInt(1000)],
         gas: gasEstimate ? (gasEstimate * BigInt(120)) / BigInt(100) : undefined
       });
-
       console.log("Withdraw transaction hash:", hash);
-
       // Wait for transaction receipt
       const receipt = await publicClient.waitForTransactionReceipt({
         hash
       });
-
       setLoading((prev) => ({ ...prev, [amountKey]: false }));
-
       if (receipt.status === "success") {
         toast({
           title: "Withdraw Successful!",
           description: `Successfully withdrew ${amount} METRO (${type})`,
           variant: "default"
         });
-        // Refresh withdrawable amounts
-        fetchWithdrawableAmounts();
+        const amounts = withdrawableAmounts;
+        amounts[amountKey] = "0";
+        setWithdrawableAmounts(JSON.parse(JSON.stringify(amounts)));
       } else {
         toast({
           title: "Withdraw Failed!",
@@ -244,14 +234,12 @@ export default function useWithdraw(): UseWithdrawReturn {
     } catch (err: any) {
       console.error("Withdraw error:", err);
       setLoading((prev) => ({ ...prev, [amountKey]: false }));
-
       const errorMessage =
         err?.message?.includes("user rejected") ||
         err?.message?.includes("User rejected") ||
         err?.cause?.message?.includes("user rejected")
           ? "User rejected transaction"
           : err?.message || "Withdraw transaction failed";
-
       toast({
         title: "Withdraw Failed!",
         description: errorMessage,

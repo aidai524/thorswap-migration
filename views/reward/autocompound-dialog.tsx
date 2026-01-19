@@ -21,6 +21,7 @@ import {
 import { formatNumber } from "@/lib/format-number";
 import useAutocompoundOnce from "@/hooks/use-autocompound-once";
 import { useEffect } from "react";
+import Big from "big.js";
 
 interface AutocompoundDialogProps {
   /** Whether the dialog is open */
@@ -49,7 +50,7 @@ export function AutocompoundDialog({
 
   // Estimate METRO amount when claimedAmount changes
   useEffect(() => {
-    if (claimableAmount) {
+    if (Big(claimableAmount || "0").gt(0)) {
       estimateMetroAmount();
     }
   }, [claimableAmount]);
@@ -130,7 +131,9 @@ export function AutocompoundDialog({
             <ButtonWithAuth
               chainId={xMetroToken.chainId}
               onClick={() => {
-                autocompound(claimableAmount);
+                if (estimatedMetroAmount) {
+                  autocompound(claimableAmount);
+                }
               }}
               loading={autocompounding || isEstimatingMetro}
               disabled={

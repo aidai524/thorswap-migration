@@ -107,21 +107,11 @@ export default function useAutocompoundOnce(): UseAutocompoundOnceReturn {
         return;
       }
 
-      // Validate wallet client and public client
-      if (!walletClient || !publicClient) {
-        toast({
-          title: "Autocompound Failed!",
-          description: "Wallet not available",
-          variant: "destructive"
-        });
-        return;
-      }
-
       // Validate amount
-      if (!usdcAmount || Big(usdcAmount).lte(0)) {
+      if (!estimatedMetroAmount || Big(estimatedMetroAmount).lte(0)) {
         toast({
           title: "Autocompound Failed!",
-          description: "Invalid amount",
+          description: "Failed to estimate METRO amount",
           variant: "destructive"
         });
         return;
@@ -130,14 +120,10 @@ export default function useAutocompoundOnce(): UseAutocompoundOnceReturn {
       setAutocompounding(true);
 
       try {
-        // Estimate METRO amount first
-        const estimatedMetro = await estimateMetroAmount();
-        if (!estimatedMetro) {
-          throw new Error("Failed to estimate METRO amount");
-        }
-
         // Calculate minMetroOut with 1% slippage tolerance
-        const minMetroOut = Big(estimatedMetro).times(0.99).toFixed();
+        const minMetroOut = Big(estimatedMetroAmount || "0")
+          .times(0.99)
+          .toFixed();
         const minMetroOutWei = parseUnits(minMetroOut, MetroToken.decimals);
 
         // Build swapData
@@ -221,7 +207,7 @@ export default function useAutocompoundOnce(): UseAutocompoundOnceReturn {
       account?.address,
       walletClient,
       publicClient,
-      estimateMetroAmount,
+      estimatedMetroAmount,
       buildSwapData
     ]
   );
