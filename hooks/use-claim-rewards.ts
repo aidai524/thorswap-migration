@@ -50,7 +50,7 @@ export default function useClaimRewards(): UseClaimRewardsReturn {
       });
 
       // Reward token (USDC) has 6 decimals
-      const amount = formatUnits(result as bigint, 18);
+      const amount = formatUnits(result as bigint, RewardToken.decimals);
 
       setClaimableAmount(amount);
 

@@ -43,7 +43,7 @@ const xMetroToken: Token = {
 const RewardToken: Token = {
   symbol: "USDC",
   name: "USD Coin",
-  decimals: 6,
+  decimals: 18,
   address: "0x72742449CE7d19A1d3aEd5579795D70c4B23AAc0",
   chainId: 8453,
   chainName: "Base",
