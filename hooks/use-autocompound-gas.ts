@@ -40,7 +40,7 @@ export default function useDepositGas(): UseDepositGasReturn {
       const response = await dollaService.getAutocompoundGasFee(
         account.address
       );
-      setBalanceGasFee(response.balance_gas_fee);
+      setBalanceGasFee(response?.balance_gas_fee || "0");
     } catch (err: any) {
       console.error("Failed to fetch gas balance:", err);
       setBalanceGasFee(null);

@@ -46,7 +46,7 @@ export const formatNumber = (
     }
   };
 
-  if (!value || !isValid() || Big(value).eq(0)) {
+  if (!value || !isValid() || Big(value || "0").eq(0)) {
     if (isSimple) {
       if (isZeroPrecision) {
         return `${prefix}${Big(0).toFixed(precision, round)}`;

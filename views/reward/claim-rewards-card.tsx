@@ -66,7 +66,7 @@ export function ClaimRewardsCard({
                 claiming ||
                 isLoadingClaimable ||
                 !claimableAmount ||
-                Big(claimableAmount).lte(0)
+                Big(claimableAmount || "0").lte(0)
               }
             >
               {claiming ? (

@@ -172,7 +172,7 @@ export default function useWithdraw(): UseWithdrawReturn {
         ? "ythor"
         : (type.toLowerCase() as keyof typeof withdrawableAmounts);
     const amount = withdrawableAmounts[amountKey];
-    if (!amount || Big(amount).lte(0)) {
+    if (!amount || Big(amount || "0").lte(0)) {
       toast({
         title: "Withdraw Failed!",
         description: `No ${type} amount available to withdraw`,
@@ -252,7 +252,7 @@ export default function useWithdraw(): UseWithdrawReturn {
    * Format amount for display
    */
   const formatAmount = (amount: string): string => {
-    if (!amount || Big(amount).lte(0)) {
+    if (!amount || Big(amount || "0").lte(0)) {
       return "0.00";
     }
     return Number(amount).toLocaleString(undefined, {

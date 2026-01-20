@@ -112,7 +112,7 @@ export default function useAutocompoundOnce({
       }
 
       // Validate amount
-      if (!estimatedMetroAmount || Big(estimatedMetroAmount).lte(0)) {
+      if (!estimatedMetroAmount || Big(estimatedMetroAmount || "0").lte(0)) {
         toast({
           title: "Autocompound Failed!",
           description: "Failed to estimate METRO amount",

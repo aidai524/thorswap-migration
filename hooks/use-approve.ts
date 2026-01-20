@@ -57,7 +57,7 @@ export default function useApprove({
 
       const _allowance = formatUnits(allowanceRes as bigint, token.decimals);
 
-      const needApproved = Big(_allowance).lt(amount || "0");
+      const needApproved = Big(_allowance || "0").lt(Big(amount || "0"));
       setAllowance(_allowance);
       setApproved(!needApproved);
       setChecking(false);
@@ -87,7 +87,7 @@ export default function useApprove({
       }
 
       const value = parseUnits(
-        Big(approveValue).toFixed(token.decimals),
+        Big(approveValue || "0").toFixed(token.decimals),
         token.decimals
       );
 

@@ -94,7 +94,7 @@ export default function useClaimRewards(): UseClaimRewardsReturn {
     }
 
     // Validate claimable amount
-    if (!claimableAmount || Big(claimableAmount).lte(0)) {
+    if (!claimableAmount || Big(claimableAmount || "0").lte(0)) {
       toast({
         title: "Claim Failed!",
         description: "No rewards available to claim",
