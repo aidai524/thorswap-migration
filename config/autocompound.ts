@@ -1,0 +1,5 @@
+export const GAS_UNIT = 0.0005;
+
+export const GAS_THRESHOLD = 0.000005;
+
+export const GAS_ACCOUNT = "0x0c3a8C22f370013CCE1FAB72A4f0E8c9ea39a5F5"

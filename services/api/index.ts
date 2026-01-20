@@ -1,22 +1,16 @@
 import axios, { type AxiosInstance } from "axios";
+import type {
+  RewardRecordsResponse,
+  GetRewardRecordsParams,
+  AutocompoundResponse
+} from "./types";
 
-export interface RewardRecord {
-  // Define based on actual API response structure
-  [key: string]: any;
-}
-
-export interface RewardRecordsResponse {
-  data: RewardRecord[];
-  total?: number;
-  page?: number;
-  total_page?: number;
-}
-
-export interface GetRewardRecordsParams {
-  address: string;
-  page?: number;
-  page_size?: number;
-}
+export type {
+  RewardRecord,
+  RewardRecordsResponse,
+  GetRewardRecordsParams,
+  AutocompoundResponse
+} from "./types";
 
 class DollaService {
   private api: AxiosInstance;
@@ -49,6 +43,23 @@ class DollaService {
           address,
           page,
           page_size
+        }
+      }
+    );
+    return response.data.data;
+  }
+
+  /**
+   * Get autocompound information
+   * @param address - User address
+   * @returns Autocompound information including gas fees and enable status
+   */
+  async getAutocompoundGasFee(address: string): Promise<AutocompoundResponse> {
+    const response = await this.api.get<{data: AutocompoundResponse}>(
+      "/v1/autocompound",
+      {
+        params: {
+          address
         }
       }
     );

@@ -19,7 +19,7 @@ import {
   Coins
 } from "lucide-react";
 import { formatNumber } from "@/lib/format-number";
-import useAutocompoundOnce from "@/hooks/use-autocompound-once";
+import useAutocompoundOnce from "@/hooks/use-compound";
 import { useEffect } from "react";
 import Big from "big.js";
 
