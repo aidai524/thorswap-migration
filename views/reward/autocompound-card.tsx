@@ -134,7 +134,7 @@ export function AutocompoundCard() {
               className="w-full"
               size="lg"
               onClick={depositGas}
-              disabled={depositing || isLoadingBalance || !!formattedGasBalance}
+              disabled={depositing || isLoadingBalance}
             >
               {depositing ? (
                 <>
