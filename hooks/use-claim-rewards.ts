@@ -34,11 +34,6 @@ export default function useClaimRewards(): UseClaimRewardsReturn {
    * Fetch claimable reward amount from contract
    */
   const fetchClaimableAmount = useCallback(async () => {
-    if (!account?.address || !publicClient) {
-      setClaimableAmount("0");
-      return;
-    }
-
     setIsLoadingClaimable(true);
     try {
       // Call claimable to get the claimable reward amount
@@ -50,7 +45,9 @@ export default function useClaimRewards(): UseClaimRewardsReturn {
       });
 
       // Reward token (USDC) has 6 decimals
-      const amount = Big(result || 0).gt(1) ? formatUnits(result as bigint, RewardToken.decimals) : "0";
+      const amount = Big(result || 0).gt(1)
+        ? formatUnits(result as bigint, RewardToken.decimals)
+        : "0";
 
       setClaimableAmount(amount);
 
@@ -65,8 +62,16 @@ export default function useClaimRewards(): UseClaimRewardsReturn {
 
   // Fetch claimable amount when account or publicClient changes
   useEffect(() => {
+    if (
+      !account?.address ||
+      !publicClient ||
+      account?.chainId !== xMetroToken.chainId
+    ) {
+      setClaimableAmount("0");
+      return;
+    }
     fetchClaimableAmount();
-  }, [fetchClaimableAmount]);
+  }, [account?.address, publicClient]);
 
   /**
    * Execute claim rewards transaction

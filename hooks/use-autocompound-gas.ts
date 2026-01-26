@@ -7,25 +7,37 @@ import { useWallet } from "@/contexts/wallet";
 import { GAS_UNIT, GAS_ACCOUNT } from "@/config/autocompound";
 import dollaService from "@/services/api";
 
-interface UseDepositGasReturn {
+interface UseAutocompoundGasReturn {
   /** Loading state for depositing gas */
   depositing: boolean;
   /** Balance gas fee from API */
   balanceGasFee: string | null;
   /** Loading state for fetching gas balance */
   isLoadingBalance: boolean;
+  /** Withdraw data from API */
+  isAutocompoundEnabled: boolean;
+  withdrawData: {
+    isWithdrawing: boolean;
+    withdrawGasFee: string;
+  } | null;
   /** Execute deposit gas transaction */
   depositGas: () => Promise<void>;
   /** Refresh gas balance */
   refreshBalance: () => Promise<void>;
+  /** Set autocompound enabled status */
+  setIsAutocompoundEnabled: (enabled: boolean) => void;
 }
 
-export default function useDepositGas(): UseDepositGasReturn {
+export default function useAutocompoundGas(): UseAutocompoundGasReturn {
   const { account, publicClient, walletClient } = useWallet();
   const [depositing, setDepositing] = useState(false);
   const [balanceGasFee, setBalanceGasFee] = useState<string | null>(null);
   const [isLoadingBalance, setIsLoadingBalance] = useState(false);
-
+  const [withdrawData, setWithdrawData] = useState<{
+    isWithdrawing: boolean;
+    withdrawGasFee: string;
+  } | null>(null);
+  const [isAutocompoundEnabled, setIsAutocompoundEnabled] = useState(false);
   /**
    * Fetch gas balance from API
    */
@@ -41,6 +53,11 @@ export default function useDepositGas(): UseDepositGasReturn {
         account.address
       );
       setBalanceGasFee(response?.balance_gas_fee || "0");
+      setWithdrawData({
+        isWithdrawing: response?.withdraw || false,
+        withdrawGasFee: response?.withdraw_gas_fee || "0"
+      });
+      setIsAutocompoundEnabled(response?.enable || false);
     } catch (err: any) {
       console.error("Failed to fetch gas balance:", err);
       setBalanceGasFee(null);
@@ -131,6 +148,9 @@ export default function useDepositGas(): UseDepositGasReturn {
     depositing,
     balanceGasFee,
     isLoadingBalance,
+    withdrawData,
+    isAutocompoundEnabled,
+    setIsAutocompoundEnabled,
     depositGas,
     refreshBalance: fetchGasBalance
   };

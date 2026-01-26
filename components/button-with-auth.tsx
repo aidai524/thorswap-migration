@@ -8,19 +8,24 @@ export function ButtonWithAuth({
   onClick,
   loading,
   disabled,
-  children
+  children,
+  ...rest
 }: {
   chainId: number;
   onClick: () => void;
-  loading: boolean;
-  disabled: boolean;
+  loading?: boolean;
+  disabled?: boolean;
   children: React.ReactNode;
-}) {
+} & React.ComponentProps<typeof Button>) {
   const { account, connect, switchChain, isSwitchingChain } = useWallet();
 
   if (!account?.address) {
     return (
-      <Button className="cursor-pointer w-full" onClick={() => connect?.()}>
+      <Button
+        {...rest}
+        className="cursor-pointer w-full"
+        onClick={() => connect?.()}
+      >
         Connect Wallet
       </Button>
     );
@@ -29,6 +34,7 @@ export function ButtonWithAuth({
   if (account?.chainId !== chainId) {
     return (
       <Button
+        {...rest}
         className="w-full cursor-pointer"
         size="lg"
         onClick={() => {
@@ -50,6 +56,7 @@ export function ButtonWithAuth({
 
   return (
     <Button
+      {...rest}
       className={clsx(
         "w-full",
         disabled ? "cursor-not-allowed" : "cursor-pointer"

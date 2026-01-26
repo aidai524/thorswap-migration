@@ -1,6 +1,6 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
+import { ButtonWithAuth } from "@/components/button-with-auth";
 import {
   Card,
   CardContent,
@@ -11,6 +11,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import useAutocompound from "@/hooks/use-autocompound";
 import useAutocompoundGas from "@/hooks/use-autocompound-gas";
+import useWithdrawAutocompoundGas from "@/hooks/use-withdraw-autocompound-gas";
 import {
   ArrowRight,
   DollarSign,
@@ -23,22 +24,34 @@ import {
 import Big from "big.js";
 import { formatNumber } from "@/lib/format-number";
 import { GAS_THRESHOLD } from "@/config/autocompound";
+import { xMetroToken } from "@/config/tokens";
 
 export function AutocompoundCard() {
-  const {
-    autocompoundEnabled,
-    isEnabling,
-    isDisabling,
-    enableAutocompound,
-    disableAutocompound
-  } = useAutocompound();
+  const { isEnabling, isDisabling, enableAutocompound, disableAutocompound } =
+    useAutocompound(async (enabled: boolean) => {
+      await refreshBalance();
+      setIsAutocompoundEnabled(enabled);
+    });
 
   const {
     depositing,
     balanceGasFee,
     isLoadingBalance,
-    depositGas
+    withdrawData,
+    depositGas,
+    refreshBalance,
+    isAutocompoundEnabled,
+    setIsAutocompoundEnabled
   } = useAutocompoundGas();
+
+  const { withdrawing, withdrawGas } = useWithdrawAutocompoundGas();
+
+  // Handle withdraw gas with balance refresh
+  const handleWithdrawGas = async () => {
+    await withdrawGas();
+    // Refresh balance after withdraw (success or failure, to get latest state)
+    await refreshBalance();
+  };
 
   // Check if gas balance is low
   const isLowGasBalance =
@@ -65,16 +78,16 @@ export function AutocompoundCard() {
             </CardDescription>
           </div>
           <Badge
-            variant={autocompoundEnabled ? "default" : "secondary"}
+            variant={isAutocompoundEnabled ? "default" : "secondary"}
             className="ml-4 flex items-center gap-1.5"
           >
             <div
               className={`h-1.5 w-1.5 rounded-full ${
-                autocompoundEnabled ? "bg-success" : "bg-muted-foreground"
+                isAutocompoundEnabled ? "bg-success" : "bg-muted-foreground"
               }`}
             />
             <span className="text-xs">
-              {autocompoundEnabled ? "Enabled" : "Disabled"}
+              {isAutocompoundEnabled ? "Enabled" : "Disabled"}
             </span>
           </Badge>
         </div>
@@ -109,9 +122,10 @@ export function AutocompoundCard() {
           </div>
         </div>
 
-        {autocompoundEnabled ? (
+        {isAutocompoundEnabled ? (
           <div className="grid grid-cols-2 gap-4">
-            <Button
+            <ButtonWithAuth
+              chainId={xMetroToken.chainId}
               variant="secondary"
               className="w-full"
               size="lg"
@@ -128,8 +142,9 @@ export function AutocompoundCard() {
                   Disable Autocompound
                 </>
               )}
-            </Button>
-            <Button
+            </ButtonWithAuth>
+            <ButtonWithAuth
+              chainId={xMetroToken.chainId}
               variant={isLowGasBalance ? "destructive" : "secondary"}
               className="w-full"
               size="lg"
@@ -147,34 +162,62 @@ export function AutocompoundCard() {
                   ) : (
                     <Fuel className="mr-2 h-4 w-4" />
                   )}
-                  {formattedGasBalance
-                    ? `${formattedGasBalance} ETH`
-                    : isLowGasBalance
+                  {isLowGasBalance
                     ? "Low Gas - Deposit"
-                    : "Deposit Gas"}
+                    : formattedGasBalance
+                      ? `${formattedGasBalance} ETH`
+                      : "Deposit Gas"}
                 </>
               )}
-            </Button>
+            </ButtonWithAuth>
           </div>
         ) : (
-          <Button
-            variant="secondary"
-            className="w-full"
-            size="lg"
-            onClick={enableAutocompound}
-            disabled={isEnabling}
-          >
-            {isEnabling ? (
-              <>
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              </>
-            ) : (
-              <>
-                <RefreshCw className="mr-2 h-4 w-4" />
-                Enable Autocompound
-              </>
-            )}
-          </Button>
+          <div className="grid grid-cols-2 gap-4">
+            <ButtonWithAuth
+              chainId={xMetroToken.chainId}
+              variant="secondary"
+              className="w-full"
+              size="lg"
+              onClick={enableAutocompound}
+              disabled={isEnabling}
+            >
+              {isEnabling ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                </>
+              ) : (
+                <>
+                  <RefreshCw className="mr-2 h-4 w-4" />
+                  Enable Autocompound
+                </>
+              )}
+            </ButtonWithAuth>
+            <ButtonWithAuth
+              chainId={xMetroToken.chainId}
+              variant="secondary"
+              className="w-full"
+              size="lg"
+              onClick={handleWithdrawGas}
+              disabled={
+                withdrawing ||
+                isLoadingBalance ||
+                withdrawData?.isWithdrawing ||
+                !formattedGasBalance ||
+                Big(formattedGasBalance).lte(0)
+              }
+            >
+              {withdrawing ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                </>
+              ) : (
+                <>
+                  <Fuel className="mr-2 h-4 w-4" />
+                  Withdraw Gas
+                </>
+              )}
+            </ButtonWithAuth>
+          </div>
         )}
 
         <p className="text-center text-xs text-muted-foreground">

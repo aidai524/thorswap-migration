@@ -2,14 +2,16 @@ import axios, { type AxiosInstance } from "axios";
 import type {
   RewardRecordsResponse,
   GetRewardRecordsParams,
-  AutocompoundResponse
+  AutocompoundResponse,
+  WithdrawAutocompoundGasParams
 } from "./types";
 
 export type {
   RewardRecord,
   RewardRecordsResponse,
   GetRewardRecordsParams,
-  AutocompoundResponse
+  AutocompoundResponse,
+  WithdrawAutocompoundGasParams
 } from "./types";
 
 class DollaService {
@@ -61,6 +63,27 @@ class DollaService {
         params: {
           address
         }
+      }
+    );
+    return response.data.data;
+  }
+
+  /**
+   * Withdraw autocompound gas fee
+   * @param params - Request parameters
+   * @param params.address - User address
+   * @param params.signature - Signature for authentication
+   * @returns Response data
+   */
+  async withdrawAutocompoundGas(
+    params: WithdrawAutocompoundGasParams
+  ): Promise<any> {
+    const { address, signature } = params;
+    const response = await this.api.post<{data: any}>(
+      "/v1/autocompound/gas/withdraw",
+      {
+        address,
+        signature
       }
     );
     return response.data.data;

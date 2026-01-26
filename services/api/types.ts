@@ -21,4 +21,11 @@ export interface AutocompoundResponse {
   enable: boolean;
   total_gas_fee: string;
   used_gas_fee: string;
+  withdraw: boolean;
+  withdraw_gas_fee: string;
+}
+
+export interface WithdrawAutocompoundGasParams {
+  address: string;
+  signature: string;
 }

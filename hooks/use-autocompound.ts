@@ -10,10 +10,6 @@ import xMetroAbi from "@/config/abi/xmetro";
  * Hook return value interface
  */
 interface UseAutoCompoundReturn {
-  /** Whether auto compound is enabled for the user */
-  autocompoundEnabled: boolean;
-  /** Loading state for checking auto compound status */
-  isLoading: boolean;
   /** Loading state for enabling auto compound */
   isEnabling: boolean;
   /** Loading state for disabling auto compound */
@@ -22,8 +18,6 @@ interface UseAutoCompoundReturn {
   enableAutocompound: () => Promise<void>;
   /** Disable auto compound */
   disableAutocompound: () => Promise<void>;
-  /** Refresh auto compound status */
-  refreshStatus: () => Promise<void>;
 }
 
 /**
@@ -40,41 +34,12 @@ interface UseAutoCompoundReturn {
  * </button>
  * ```
  */
-export default function useAutoCompound(): UseAutoCompoundReturn {
-  const [autocompoundEnabled, setAutocompoundEnabled] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
+export default function useAutoCompound(
+  onSuccess: (enabled: boolean) => void
+): UseAutoCompoundReturn {
   const [isEnabling, setIsEnabling] = useState(false);
   const [isDisabling, setIsDisabling] = useState(false);
   const { account, publicClient, walletClient } = useWallet();
-
-  /**
-   * Check if auto compound is enabled for the current user
-   */
-  const checkAutocompoundStatus = useCallback(async () => {
-    if (!account?.address || !publicClient) {
-      setAutocompoundEnabled(false);
-      setIsLoading(false);
-      return;
-    }
-
-    setIsLoading(true);
-
-    try {
-      const enabled = await publicClient.readContract({
-        address: xMetroToken.address as `0x${string}`,
-        abi: xMetroAbi,
-        functionName: "autocompoundEnabled",
-        args: [account.address as `0x${string}`]
-      });
-
-      setAutocompoundEnabled(enabled as boolean);
-    } catch (err) {
-      console.error("Failed to check auto compound status:", err);
-      setAutocompoundEnabled(false);
-    } finally {
-      setIsLoading(false);
-    }
-  }, [account?.address, publicClient]);
 
   /**
    * Enable auto compound for the current user
@@ -149,7 +114,7 @@ export default function useAutoCompound(): UseAutoCompoundReturn {
           variant: "default"
         });
         // Refresh status after successful enable
-        await checkAutocompoundStatus();
+        onSuccess(true);
       } else {
         toast({
           title: "Enable Auto Compound Failed!",
@@ -249,7 +214,7 @@ export default function useAutoCompound(): UseAutoCompoundReturn {
           variant: "default"
         });
         // Refresh status after successful disable
-        await checkAutocompoundStatus();
+        onSuccess(false);
       } else {
         toast({
           title: "Disable Auto Compound Failed!",
@@ -276,18 +241,10 @@ export default function useAutoCompound(): UseAutoCompoundReturn {
     }
   };
 
-  // Check auto compound status when account or publicClient changes
-  useEffect(() => {
-    checkAutocompoundStatus();
-  }, [checkAutocompoundStatus]);
-
   return {
-    autocompoundEnabled,
-    isLoading,
     isEnabling,
     isDisabling,
     enableAutocompound,
-    disableAutocompound,
-    refreshStatus: checkAutocompoundStatus
+    disableAutocompound
   };
 }
