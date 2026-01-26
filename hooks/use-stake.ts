@@ -23,6 +23,10 @@ interface UseStakeReturn {
   setStakeAmount: (amount: string) => void;
   /** Whether user is a contributor */
   isContributor: boolean;
+  /** Whether to use contributor stake (only relevant when isContributor is true) */
+  useContributorStake: boolean;
+  /** Set whether to use contributor stake */
+  setUseContributorStake: (use: boolean) => void;
   /** Token balance loading state */
   isTokenBalanceLoading: boolean;
   /** Token balance */
@@ -64,6 +68,7 @@ export default function useStake({
     string | null
   >(null);
   const [isEstimatingXMetro, setIsEstimatingXMetro] = useState(false);
+  const [useContributorStake, setUseContributorStake] = useState(true);
   const { account, publicClient, walletClient } = useWallet();
   const {
     balance: tokenBalance,
@@ -143,6 +148,9 @@ export default function useStake({
       try {
         const amountInWei = parseUnits(Big(amount).toFixed(18), 18);
 
+        // Determine which method to use based on contributor status and user choice
+        const method =
+          isContributor && useContributorStake ? "stakeContributor" : "stake";
         // Simulate stake call to get minted shares
         // Note: This may fail if user hasn't approved or has insufficient balance
         // We handle errors silently as they're expected during estimation
@@ -150,7 +158,7 @@ export default function useStake({
           account: account.address as `0x${string}`,
           address: xMetroToken.address as `0x${string}`,
           abi: xMetroAbi,
-          functionName: "stake",
+          functionName: method,
           args: [amountInWei]
         });
 
@@ -184,7 +192,13 @@ export default function useStake({
         }
       }
     },
-    [publicClient, account?.address, tokenBalance]
+    [
+      publicClient,
+      account?.address,
+      tokenBalance,
+      isContributor,
+      useContributorStake
+    ]
   );
 
   // Debounced version of estimateXMetroAmount
@@ -192,7 +206,7 @@ export default function useStake({
     wait: 500 // 500ms debounce
   });
 
-  // Estimate xMETRO amount when stakeAmount changes
+  // Estimate xMETRO amount when stakeAmount or useContributorStake changes
   useEffect(() => {
     debouncedEstimateXMetro(stakeAmount);
 
@@ -202,7 +216,7 @@ export default function useStake({
         abortControllerRef.current.abort();
       }
     };
-  }, [stakeAmount, debouncedEstimateXMetro]);
+  }, [stakeAmount, useContributorStake, debouncedEstimateXMetro]);
 
   /**
    * Execute stake transaction
@@ -256,7 +270,9 @@ export default function useStake({
     try {
       // Convert amount to bigint (METRO token has 18 decimals)
       const amountInWei = parseUnits(Big(stakeAmount).toFixed(18), 18);
-      const method = isContributor ? "stakeContributor" : "stake";
+      // Determine which method to use based on contributor status and user choice
+      const method =
+        isContributor && useContributorStake ? "stakeContributor" : "stake";
       // Estimate gas
       let gasEstimate: bigint | undefined;
       try {
@@ -338,6 +354,8 @@ export default function useStake({
     stakeAmount,
     setStakeAmount,
     isContributor,
+    useContributorStake,
+    setUseContributorStake,
     isTokenBalanceLoading,
     tokenBalance,
     stake,

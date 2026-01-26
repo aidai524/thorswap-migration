@@ -3,6 +3,7 @@
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
+import { Switch } from "@/components/ui/switch";
 import { ButtonWithApprove } from "@/components/button-with-approve";
 import useStake from "@/hooks/use-stake";
 import { MetroToken, xMetroToken } from "@/config/tokens";
@@ -23,6 +24,8 @@ export function StakePanel({ refetchData }: { refetchData: () => void }) {
     stake,
     amountError,
     isContributor,
+    useContributorStake,
+    setUseContributorStake,
     estimatedXMetroAmount,
     isEstimatingXMetro
   } = useStake({ onSuccess: refetchData });
@@ -41,6 +44,29 @@ export function StakePanel({ refetchData }: { refetchData: () => void }) {
 
   return (
     <div className="space-y-4">
+      {isContributor && (
+        <div className="flex items-center justify-between rounded-lg border p-3">
+          <div className="space-y-0.5">
+            <Label
+              htmlFor="contributor-stake-switch"
+              className="text-sm font-medium"
+            >
+              Stake Type
+            </Label>
+            <p className="text-xs text-muted-foreground">
+              {useContributorStake
+                ? "Using contributor stake (6 month cliff, 2.5 year linear unlock)"
+                : "Using normal stake"}
+            </p>
+          </div>
+          <Switch
+            id="contributor-stake-switch"
+            className="cursor-pointer"
+            checked={useContributorStake}
+            onCheckedChange={setUseContributorStake}
+          />
+        </div>
+      )}
       <div className="space-y-2">
         <Label htmlFor="stake-amount">Amount</Label>
         <div className="relative">
@@ -76,7 +102,7 @@ export function StakePanel({ refetchData }: { refetchData: () => void }) {
             <span>METRO</span>
           </div>
         </div>
-        {!isContributor && (
+        {(!isContributor || !useContributorStake) && (
           <div className="flex items-center justify-between text-sm">
             <span className="text-muted-foreground">You'll receive</span>
             <div className="font-medium flex items-center gap-1">
@@ -90,14 +116,6 @@ export function StakePanel({ refetchData }: { refetchData: () => void }) {
           </div>
         )}
       </div>
-      {isContributor && (
-        <div className="flex items-start gap-2 rounded-lg bg-secondary p-3 text-sm">
-          <Info className="mt-0.5 h-4 w-4 text-primary" />
-          <p className="text-muted-foreground">
-            6 month cliff, 2.5 year linear unlock
-          </p>
-        </div>
-      )}
       {amountError && <p className="text-sm text-destructive">{amountError}</p>}
       <ButtonWithApprove
         token={MetroToken}
