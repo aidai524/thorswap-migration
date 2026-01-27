@@ -4,7 +4,6 @@ import { useState, useEffect, useCallback } from "react";
 import { useWallet } from "@/contexts/wallet";
 import { ThorToken, YThorToken, xMetroToken } from "@/config/tokens";
 import xMetroAbi from "@/config/abi/xmetro";
-import useUserStore from "@/stores/use-user";
 import Big from "big.js";
 
 /**
@@ -113,7 +112,6 @@ interface UseUserOperationsReturn {
  */
 export default function useUserOperations(): UseUserOperationsReturn {
   const { account, publicClient } = useWallet();
-  const { isContributor } = useUserStore();
   const [sortedOperations, setSortedOperations] = useState<OperationItem[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -164,15 +162,12 @@ export default function useUserOperations(): UseUserOperationsReturn {
         }
       ];
 
-      // Only query contributorVestingCount if user is a contributor
-      if (isContributor) {
-        countCalls.push({
-          address: contractAddress,
-          abi: xMetroAbi,
-          functionName: "contributorVestingCount",
-          args: [userAddress]
-        });
-      }
+      countCalls.push({
+        address: contractAddress,
+        abi: xMetroAbi,
+        functionName: "contributorVestingCount",
+        args: [userAddress]
+      });
 
       const countResults = await publicClient.multicall({
         contracts: countCalls,
@@ -183,9 +178,7 @@ export default function useUserOperations(): UseUserOperationsReturn {
       const thorLocks10mCount = Number(countResults[1] || 0);
       const yThorVestingCount = Number(countResults[2] || 0);
       const unstakeRequestCount = Number(countResults[3] || 0);
-      const contributorVestingCount = isContributor
-        ? Number(countResults[4] || 0)
-        : 0;
+      const contributorVestingCount = Number(countResults[4] || 0);
 
       // Step 2: Query detailed data if count > 0 using multicall
       const detailCalls: any[] = [];
@@ -230,16 +223,13 @@ export default function useUserOperations(): UseUserOperationsReturn {
         });
       }
 
-      // Query contributorVesting details (only if user is contributor and has records)
-      if (isContributor) {
-        for (let i = 0; i < contributorVestingCount; i++) {
-          detailCalls.push({
-            address: contractAddress,
-            abi: xMetroAbi,
-            functionName: "contributorVesting",
-            args: [userAddress, BigInt(i)]
-          });
-        }
+      for (let i = 0; i < contributorVestingCount; i++) {
+        detailCalls.push({
+          address: contractAddress,
+          abi: xMetroAbi,
+          functionName: "contributorVesting",
+          args: [userAddress, BigInt(i)]
+        });
       }
 
       // Execute multicall for detailed data
@@ -324,23 +314,21 @@ export default function useUserOperations(): UseUserOperationsReturn {
       }
       // Parse contributorVesting results
       const contributorVesting: VestingSchedule[] = [];
-      if (isContributor) {
-        for (let i = 0; i < contributorVestingCount; i++) {
-          const result = detailResults[resultIndex];
-          resultIndex++;
-          if (result) {
-            contributorVesting.push({
-              totalAmount: Big(result.totalAmount)
-                .div(10 ** xMetroToken.decimals)
-                .toString(),
-              claimed: Big(result.claimed)
-                .div(10 ** xMetroToken.decimals)
-                .toString(),
-              startTime: Big(result.startTime).mul(1000).toNumber(),
-              duration: Big(result.duration).mul(1000).toNumber(),
-              type: "contributorVesting" as const
-            });
-          }
+      for (let i = 0; i < contributorVestingCount; i++) {
+        const result = detailResults[resultIndex];
+        resultIndex++;
+        if (result) {
+          contributorVesting.push({
+            totalAmount: Big(result.totalAmount)
+              .div(10 ** xMetroToken.decimals)
+              .toString(),
+            claimed: Big(result.claimed)
+              .div(10 ** xMetroToken.decimals)
+              .toString(),
+            startTime: Big(result.startTime).mul(1000).toNumber(),
+            duration: Big(result.duration).mul(1000).toNumber(),
+            type: "contributorVesting" as const
+          });
         }
       }
 
@@ -386,7 +374,7 @@ export default function useUserOperations(): UseUserOperationsReturn {
     } finally {
       setIsLoading(false);
     }
-  }, [account?.address, publicClient, isContributor]);
+  }, [account?.address, publicClient]);
 
   // Auto-refresh when dependencies change
   useEffect(() => {

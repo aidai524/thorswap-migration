@@ -3,9 +3,7 @@
 import { ButtonWithAuth } from "@/components/button-with-auth";
 import { xMetroToken } from "@/config/tokens";
 import useWithdraw from "@/hooks/use-withdraw";
-import useUserStore from "@/stores/use-user";
 import Big from "big.js";
-import { useMemo } from "react";
 
 /**
  * Withdraw panel component
@@ -20,16 +18,11 @@ export function WithdrawPanel({ refetchData }: { refetchData: () => void }) {
     handleWithdraw,
     formatAmount
   } = useWithdraw();
-  const { isContributor } = useUserStore();
-  const _withdrawTypes = useMemo(() => {
-    return !isContributor
-      ? withdrawTypes.filter((type) => type.type !== "Contributor")
-      : withdrawTypes;
-  }, [isContributor, withdrawTypes]);
+
 
   return (
     <div className="space-y-4">
-      {_withdrawTypes.map(({ type, label, functionName }) => {
+      {withdrawTypes.map(({ type, label, functionName }) => {
         const amountKey =
           type === "yTHOR"
             ? "ythor"
