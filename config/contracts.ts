@@ -1,1 +1,1 @@
-export const ThorMigrationEscrow = "0x295cbeD18e8758e69bb310553270807900E15cf2";
+export const ThorMigrationEscrow = "0xaA4C73ea1145dcDcfA649cE314A745532021d8d3";

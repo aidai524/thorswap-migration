@@ -34,7 +34,7 @@ const xMetroToken: Token = {
   symbol: "xMETRO",
   name: "xMETRO Token",
   decimals: 18,
-  address: "0x4Ed1dFa05D75Ca746Af88217a113a168E1F879B4",
+  address: "0xbFdE6fE2B966D72c5C8802777cd13c2EC7dc7E29",
   chainId: 8453,
   chainName: "Base",
   icon: "/tokens/xmetro.svg"
