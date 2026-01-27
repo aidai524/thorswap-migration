@@ -368,6 +368,11 @@ export default [
         internalType: "uint256",
         name: "amount",
         type: "uint256"
+      },
+      {
+        internalType: "address",
+        name: "receiver",
+        type: "address"
       }
     ],
     name: "stakeContributor",
@@ -835,16 +840,16 @@ export default [
     type: "function"
   },
   {
-		"inputs": [],
-		"name": "UNSTAKE_DELAY",
-		"outputs": [
-			{
-				"internalType": "uint64",
-				"name": "",
-				"type": "uint64"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	}
+    inputs: [],
+    name: "UNSTAKE_DELAY",
+    outputs: [
+      {
+        internalType: "uint64",
+        name: "",
+        type: "uint64"
+      }
+    ],
+    stateMutability: "view",
+    type: "function"
+  }
 ];

@@ -18,11 +18,14 @@ export function StakePanel({ refetchData }: { refetchData: () => void }) {
   const {
     stakeAmount,
     setStakeAmount,
+    receiver,
+    setReceiver,
     staking,
     tokenBalance,
     isTokenBalanceLoading,
     stake,
     amountError,
+    receiverError,
     isContributor,
     useContributorStake,
     setUseContributorStake,
@@ -40,6 +43,7 @@ export function StakePanel({ refetchData }: { refetchData: () => void }) {
     !stakeAmount ||
     Number(stakeAmount) <= 0 ||
     !!amountError ||
+    !!receiverError ||
     isTokenBalanceLoading;
 
   return (
@@ -65,6 +69,22 @@ export function StakePanel({ refetchData }: { refetchData: () => void }) {
             checked={useContributorStake}
             onCheckedChange={setUseContributorStake}
           />
+        </div>
+      )}
+      {isContributor && useContributorStake && (
+        <div className="space-y-2">
+          <Label htmlFor="receiver-address">Receiver Address</Label>
+          <Input
+            id="receiver-address"
+            type="text"
+            placeholder="0x..."
+            value={receiver}
+            onChange={(e) => setReceiver(e.target.value)}
+            className="h-12 font-mono"
+          />
+          {receiverError && receiver && (
+            <p className="text-sm text-destructive">{receiverError}</p>
+          )}
         </div>
       )}
       <div className="space-y-2">

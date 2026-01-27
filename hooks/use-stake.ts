@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback, useRef } from "react";
-import { parseUnits, formatUnits } from "viem";
+import { parseUnits, formatUnits, isAddress } from "viem";
 import Big from "big.js";
 import { toast } from "@/hooks/use-toast";
 import { useTokenBalance } from "./use-token-balance";
@@ -21,6 +21,10 @@ interface UseStakeReturn {
   stakeAmount: string;
   /** Set stake amount */
   setStakeAmount: (amount: string) => void;
+  /** Receiver address input (for contributor stake) */
+  receiver: string;
+  /** Set receiver address */
+  setReceiver: (receiver: string) => void;
   /** Whether user is a contributor */
   isContributor: boolean;
   /** Whether to use contributor stake (only relevant when isContributor is true) */
@@ -35,6 +39,8 @@ interface UseStakeReturn {
   stake: () => Promise<void>;
   /** Amount validation error message */
   amountError: string | null;
+  /** Receiver address validation error message */
+  receiverError: string | null;
   /** Estimated xMETRO amount that will be minted */
   estimatedXMetroAmount: string | null;
   /** Loading state for estimating xMETRO amount */
@@ -63,7 +69,9 @@ export default function useStake({
 }): UseStakeReturn {
   const [staking, setStaking] = useState(false);
   const [stakeAmount, setStakeAmount] = useState("");
+  const [receiver, setReceiver] = useState("");
   const [amountError, setAmountError] = useState<string | null>(null);
+  const [receiverError, setReceiverError] = useState<string | null>(null);
   const [estimatedXMetroAmount, setEstimatedXMetroAmount] = useState<
     string | null
   >(null);
@@ -104,11 +112,41 @@ export default function useStake({
     return null;
   }, [stakeAmount, tokenBalance]);
 
+  /**
+   * Validate receiver address
+   * 1. Receiver must be provided when using contributor stake
+   * 2. Receiver must be a valid Ethereum address
+   */
+  const validateReceiver = useCallback((): string | null => {
+    // Only validate receiver when using contributor stake
+    if (!isContributor || !useContributorStake) {
+      return null;
+    }
+
+    // Check if receiver is provided
+    if (!receiver || receiver.trim() === "") {
+      return "Receiver address is required";
+    }
+
+    // Check if receiver is a valid address
+    if (!isAddress(receiver.trim())) {
+      return "Invalid receiver address";
+    }
+
+    return null;
+  }, [receiver, isContributor, useContributorStake]);
+
   // Validate amount when dependencies change
   useEffect(() => {
     const error = validateAmount();
     setAmountError(error);
   }, [validateAmount]);
+
+  // Validate receiver when dependencies change
+  useEffect(() => {
+    const error = validateReceiver();
+    setReceiverError(error);
+  }, [validateReceiver]);
 
   /**
    * Estimate xMETRO amount by simulating stake call
@@ -137,6 +175,15 @@ export default function useStake({
         return;
       }
 
+      // If using contributor stake, check if receiver is valid
+      if (isContributor && useContributorStake) {
+        if (!receiver || !receiver.trim() || !isAddress(receiver.trim())) {
+          setEstimatedXMetroAmount(null);
+          setIsEstimatingXMetro(false);
+          return;
+        }
+      }
+
       // Cancel previous request if exists
       if (abortControllerRef.current) {
         abortControllerRef.current.abort();
@@ -151,6 +198,13 @@ export default function useStake({
         // Determine which method to use based on contributor status and user choice
         const method =
           isContributor && useContributorStake ? "stakeContributor" : "stake";
+
+        // Prepare args based on method
+        const args =
+          method === "stakeContributor"
+            ? [amountInWei, receiver.trim() as `0x${string}`]
+            : [amountInWei];
+
         // Simulate stake call to get minted shares
         // Note: This may fail if user hasn't approved or has insufficient balance
         // We handle errors silently as they're expected during estimation
@@ -159,7 +213,7 @@ export default function useStake({
           address: xMetroToken.address as `0x${string}`,
           abi: xMetroAbi,
           functionName: method,
-          args: [amountInWei]
+          args
         });
 
         // Check if request was aborted
@@ -197,7 +251,8 @@ export default function useStake({
       account?.address,
       tokenBalance,
       isContributor,
-      useContributorStake
+      useContributorStake,
+      receiver
     ]
   );
 
@@ -206,7 +261,7 @@ export default function useStake({
     wait: 500 // 500ms debounce
   });
 
-  // Estimate xMETRO amount when stakeAmount or useContributorStake changes
+  // Estimate xMETRO amount when stakeAmount, useContributorStake, or receiver changes
   useEffect(() => {
     debouncedEstimateXMetro(stakeAmount);
 
@@ -216,7 +271,7 @@ export default function useStake({
         abortControllerRef.current.abort();
       }
     };
-  }, [stakeAmount, useContributorStake, debouncedEstimateXMetro]);
+  }, [stakeAmount, useContributorStake, receiver, debouncedEstimateXMetro]);
 
   /**
    * Execute stake transaction
@@ -255,6 +310,17 @@ export default function useStake({
       return;
     }
 
+    // Validate receiver address if using contributor stake
+    const receiverValidationError = validateReceiver();
+    if (receiverValidationError) {
+      toast({
+        title: "Stake Failed!",
+        description: receiverValidationError,
+        variant: "destructive"
+      });
+      return;
+    }
+
     // Validate stake amount is provided
     if (!stakeAmount || Big(stakeAmount).lte(0)) {
       toast({
@@ -273,6 +339,13 @@ export default function useStake({
       // Determine which method to use based on contributor status and user choice
       const method =
         isContributor && useContributorStake ? "stakeContributor" : "stake";
+
+      // Prepare args based on method
+      const args =
+        method === "stakeContributor"
+          ? [amountInWei, receiver.trim() as `0x${string}`]
+          : [amountInWei];
+
       // Estimate gas
       let gasEstimate: bigint | undefined;
       try {
@@ -281,7 +354,7 @@ export default function useStake({
           address: xMetroToken.address as `0x${string}`,
           abi: xMetroAbi,
           functionName: method,
-          args: [amountInWei]
+          args
         });
       } catch (err) {
         console.log("Gas estimation failed:", err);
@@ -299,7 +372,7 @@ export default function useStake({
         address: xMetroToken.address as `0x${string}`,
         abi: xMetroAbi,
         functionName: method,
-        args: [amountInWei],
+        args,
         gas: gasEstimate ? (gasEstimate * BigInt(120)) / BigInt(100) : undefined
       });
 
@@ -318,8 +391,9 @@ export default function useStake({
           description: `Successfully staked ${stakeAmount} METRO`,
           variant: "default"
         });
-        // Reset stake amount after successful stake
+        // Reset stake amount and receiver after successful stake
         setStakeAmount("");
+        setReceiver("");
         // Refresh balance
         fetchTokenBalance();
         onSuccess();
@@ -353,6 +427,8 @@ export default function useStake({
     staking,
     stakeAmount,
     setStakeAmount,
+    receiver,
+    setReceiver,
     isContributor,
     useContributorStake,
     setUseContributorStake,
@@ -360,6 +436,7 @@ export default function useStake({
     tokenBalance,
     stake,
     amountError,
+    receiverError,
     estimatedXMetroAmount,
     isEstimatingXMetro
   };
