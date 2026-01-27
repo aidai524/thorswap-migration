@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { ButtonWithAuth } from "@/components/button-with-auth";
 import {
   Card,
@@ -9,6 +10,7 @@ import {
   CardTitle
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import useAutocompound from "@/hooks/use-autocompound";
 import useAutocompoundGas from "@/hooks/use-autocompound-gas";
 import useWithdrawAutocompoundGas from "@/hooks/use-withdraw-autocompound-gas";
@@ -19,14 +21,18 @@ import {
   RefreshCw,
   Coins,
   Fuel,
-  AlertTriangle
+  AlertTriangle,
+  History
 } from "lucide-react";
 import Big from "big.js";
 import { formatNumber } from "@/lib/format-number";
 import { GAS_THRESHOLD } from "@/config/autocompound";
 import { xMetroToken } from "@/config/tokens";
+import { GasRecordsDialog } from "./gas-records-dialog";
 
 export function AutocompoundCard() {
+  const [isGasRecordsDialogOpen, setIsGasRecordsDialogOpen] = useState(false);
+
   const { isEnabling, isDisabling, enableAutocompound, disableAutocompound } =
     useAutocompound(async (enabled: boolean) => {
       await refreshBalance();
@@ -77,19 +83,30 @@ export function AutocompoundCard() {
               Reinvest your rewards to maximize returns
             </CardDescription>
           </div>
-          <Badge
-            variant={isAutocompoundEnabled ? "default" : "secondary"}
-            className="ml-4 flex items-center gap-1.5"
-          >
-            <div
-              className={`h-1.5 w-1.5 rounded-full ${
-                isAutocompoundEnabled ? "bg-success" : "bg-muted-foreground"
-              }`}
-            />
-            <span className="text-xs">
-              {isAutocompoundEnabled ? "Enabled" : "Disabled"}
-            </span>
-          </Badge>
+          <div className="ml-4 flex items-center gap-2">
+            <Badge
+              variant={isAutocompoundEnabled ? "default" : "secondary"}
+              className="flex items-center gap-1.5"
+            >
+              <div
+                className={`h-1.5 w-1.5 rounded-full ${
+                  isAutocompoundEnabled ? "bg-success" : "bg-muted-foreground"
+                }`}
+              />
+              <span className="text-xs">
+                {isAutocompoundEnabled ? "Enabled" : "Disabled"}
+              </span>
+            </Badge>
+            <Button
+              variant="ghost"
+              size="sm"
+              className="h-7 px-2"
+              onClick={() => setIsGasRecordsDialogOpen(true)}
+              title="View gas records"
+            >
+              <History className="h-4 w-4" />
+            </Button>
+          </div>
         </div>
       </CardHeader>
       <CardContent className="space-y-4">
@@ -224,6 +241,12 @@ export function AutocompoundCard() {
           Swaps USDC for METRO and stakes as a flexible position
         </p>
       </CardContent>
+
+      {/* Gas Records Dialog */}
+      <GasRecordsDialog
+        open={isGasRecordsDialogOpen}
+        onOpenChange={setIsGasRecordsDialogOpen}
+      />
     </Card>
   );
 }

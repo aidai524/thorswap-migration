@@ -29,3 +29,22 @@ export interface WithdrawAutocompoundGasParams {
   address: string;
   signature: string;
 }
+
+export interface GetAutocompoundGasDepositsParams {
+  address: string;
+  page?: number;
+  pageSize?: number;
+}
+
+export interface GetAutocompoundGasWithdrawsParams {
+  address: string;
+  page?: number;
+  pageSize?: number;
+}
+
+export interface AutocompoundGasRecordsResponse {
+  data: any[];
+  total?: number;
+  page?: number;
+  total_page?: number;
+}
