@@ -20,11 +20,16 @@ export function WithdrawPanel({ refetchData }: { refetchData: () => void }) {
     handleWithdraw,
     formatAmount
   } = useWithdraw();
-
+  const { isContributor } = useUserStore();
+  const _withdrawTypes = useMemo(() => {
+    return !isContributor
+      ? withdrawTypes.filter((type) => type.type !== "Contributor")
+      : withdrawTypes;
+  }, [isContributor, withdrawTypes]);
 
   return (
     <div className="space-y-4">
-      {withdrawTypes.map(({ type, label, functionName }) => {
+      {_withdrawTypes.map(({ type, label, functionName }) => {
         const amountKey =
           type === "yTHOR"
             ? "ythor"

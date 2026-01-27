@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+// import { useState } from "react";
 import { ButtonWithAuth } from "@/components/button-with-auth";
 import {
   Card,
@@ -10,29 +10,24 @@ import {
   CardTitle
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import useAutocompound from "@/hooks/use-autocompound";
 import useAutocompoundGas from "@/hooks/use-autocompound-gas";
-import useWithdrawAutocompoundGas from "@/hooks/use-withdraw-autocompound-gas";
+// import useWithdrawAutocompoundGas from "@/hooks/use-withdraw-autocompound-gas";
 import {
   ArrowRight,
   DollarSign,
   Loader2,
   RefreshCw,
-  Coins,
-  Fuel,
-  AlertTriangle,
-  History
+  Coins
+  // Fuel,
+  // AlertTriangle
 } from "lucide-react";
-import Big from "big.js";
-import { formatNumber } from "@/lib/format-number";
-import { GAS_THRESHOLD } from "@/config/autocompound";
+// import Big from "big.js";
+// import { formatNumber } from "@/lib/format-number";
+// import { GAS_THRESHOLD } from "@/config/autocompound";
 import { xMetroToken } from "@/config/tokens";
-import { GasRecordsDialog } from "./gas-records-dialog";
 
 export function AutocompoundCard() {
-  const [isGasRecordsDialogOpen, setIsGasRecordsDialogOpen] = useState(false);
-
   const { isEnabling, isDisabling, enableAutocompound, disableAutocompound } =
     useAutocompound(async (enabled: boolean) => {
       await refreshBalance();
@@ -40,35 +35,34 @@ export function AutocompoundCard() {
     });
 
   const {
-    depositing,
-    balanceGasFee,
-    isLoadingBalance,
-    withdrawData,
-    depositGas,
+    // depositing,
+    // balanceGasFee,
+    // isLoadingBalance,
+    // withdrawData,
+    // depositGas,
     refreshBalance,
     isAutocompoundEnabled,
     setIsAutocompoundEnabled
   } = useAutocompoundGas();
 
-  const { withdrawing, withdrawGas } = useWithdrawAutocompoundGas();
+  // const { withdrawing, withdrawGas } = useWithdrawAutocompoundGas();
 
-  // Handle withdraw gas with balance refresh
-  const handleWithdrawGas = async () => {
-    await withdrawGas();
-    // Refresh balance after withdraw (success or failure, to get latest state)
-    await refreshBalance();
-  };
+  // // Handle withdraw gas with balance refresh
+  // const handleWithdrawGas = async () => {
+  //   await withdrawGas();
+  //   // Refresh balance after withdraw (success or failure, to get latest state)
+  //   await refreshBalance();
+  // };
 
-  // Check if gas balance is low
-  const isLowGasBalance =
-    balanceGasFee !== null &&
-    Big(balanceGasFee).lt( GAS_THRESHOLD );
+  // // Check if gas balance is low
+  // const isLowGasBalance =
+  //   balanceGasFee !== null && Big(balanceGasFee).lt(GAS_THRESHOLD);
 
-  // Format gas balance for display
-  const formattedGasBalance =
-    balanceGasFee !== null && Big(balanceGasFee).gt(0)
-      ? formatNumber(balanceGasFee, 6, true)
-      : null;
+  // // Format gas balance for display
+  // const formattedGasBalance =
+  //   balanceGasFee !== null && Big(balanceGasFee).gt(0)
+  //     ? formatNumber(balanceGasFee, 6, true)
+  //     : null;
 
   return (
     <Card className="border-border bg-card">
@@ -97,15 +91,6 @@ export function AutocompoundCard() {
                 {isAutocompoundEnabled ? "Enabled" : "Disabled"}
               </span>
             </Badge>
-            <Button
-              variant="ghost"
-              size="sm"
-              className="h-7 px-2"
-              onClick={() => setIsGasRecordsDialogOpen(true)}
-              title="View gas records"
-            >
-              <History className="h-4 w-4" />
-            </Button>
           </div>
         </div>
       </CardHeader>
@@ -140,113 +125,51 @@ export function AutocompoundCard() {
         </div>
 
         {isAutocompoundEnabled ? (
-          <div className="grid grid-cols-2 gap-4">
-            <ButtonWithAuth
-              chainId={xMetroToken.chainId}
-              variant="secondary"
-              className="w-full"
-              size="lg"
-              onClick={disableAutocompound}
-              disabled={isDisabling}
-            >
-              {isDisabling ? (
-                <>
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                </>
-              ) : (
-                <>
-                  <RefreshCw className="mr-2 h-4 w-4" />
-                  Disable Autocompound
-                </>
-              )}
-            </ButtonWithAuth>
-            <ButtonWithAuth
-              chainId={xMetroToken.chainId}
-              variant={isLowGasBalance ? "destructive" : "secondary"}
-              className="w-full"
-              size="lg"
-              onClick={depositGas}
-              disabled={depositing || isLoadingBalance}
-            >
-              {depositing ? (
-                <>
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                </>
-              ) : (
-                <>
-                  {isLowGasBalance ? (
-                    <AlertTriangle className="mr-2 h-4 w-4" />
-                  ) : (
-                    <Fuel className="mr-2 h-4 w-4" />
-                  )}
-                  {isLowGasBalance
-                    ? "Low Gas - Deposit"
-                    : formattedGasBalance
-                      ? `${formattedGasBalance} ETH`
-                      : "Deposit Gas"}
-                </>
-              )}
-            </ButtonWithAuth>
-          </div>
+          <ButtonWithAuth
+            chainId={xMetroToken.chainId}
+            variant="secondary"
+            className="w-full"
+            size="lg"
+            onClick={disableAutocompound}
+            disabled={isDisabling}
+          >
+            {isDisabling ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              </>
+            ) : (
+              <>
+                <RefreshCw className="mr-2 h-4 w-4" />
+                Disable Autocompound
+              </>
+            )}
+          </ButtonWithAuth>
         ) : (
-          <div className="grid grid-cols-2 gap-4">
-            <ButtonWithAuth
-              chainId={xMetroToken.chainId}
-              variant="secondary"
-              className="w-full"
-              size="lg"
-              onClick={enableAutocompound}
-              disabled={isEnabling}
-            >
-              {isEnabling ? (
-                <>
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                </>
-              ) : (
-                <>
-                  <RefreshCw className="mr-2 h-4 w-4" />
-                  Enable Autocompound
-                </>
-              )}
-            </ButtonWithAuth>
-            <ButtonWithAuth
-              chainId={xMetroToken.chainId}
-              variant="secondary"
-              className="w-full"
-              size="lg"
-              onClick={handleWithdrawGas}
-              disabled={
-                withdrawing ||
-                isLoadingBalance ||
-                withdrawData?.isWithdrawing ||
-                !formattedGasBalance ||
-                Big(formattedGasBalance).lte(0)
-              }
-            >
-              {withdrawing ? (
-                <>
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                </>
-              ) : (
-                <>
-                  <Fuel className="mr-2 h-4 w-4" />
-                  Withdraw Gas
-                </>
-              )}
-            </ButtonWithAuth>
-          </div>
+          <ButtonWithAuth
+            chainId={xMetroToken.chainId}
+            variant="secondary"
+            className="w-full"
+            size="lg"
+            onClick={enableAutocompound}
+            disabled={isEnabling}
+          >
+            {isEnabling ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              </>
+            ) : (
+              <>
+                <RefreshCw className="mr-2 h-4 w-4" />
+                Enable Autocompound
+              </>
+            )}
+          </ButtonWithAuth>
         )}
 
         <p className="text-center text-xs text-muted-foreground">
           Swaps USDC for METRO and stakes as a flexible position
         </p>
       </CardContent>
-
-      {/* Gas Records Dialog */}
-      <GasRecordsDialog
-        open={isGasRecordsDialogOpen}
-        onOpenChange={setIsGasRecordsDialogOpen}
-      />
     </Card>
   );
 }
