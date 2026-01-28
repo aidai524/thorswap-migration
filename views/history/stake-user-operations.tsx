@@ -52,9 +52,9 @@ export function StakeUserOperations() {
     switch (item.type) {
       case "thorLock3m":
       case "thorLock10m":
-        return formatNumber(item.data.amount, 2, true) + " THOR";
+        return formatNumber(item.data.amount, 2, true) + " METRO";
       case "yThorVesting":
-        return formatNumber(item.data.totalAmount, 2, true) + " yTHOR";
+        return formatNumber(item.data.totalAmount, 2, true) + " METRO";
       case "contributorVesting":
         return formatNumber(item.data.totalAmount, 2, true) + " METRO";
       case "unstakeRequest":

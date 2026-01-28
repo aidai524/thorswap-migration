@@ -5,10 +5,10 @@ const baseChain: Chain = {
   ...base,
   rpcUrls: {
     default: {
-      http: ["https://base.drpc.org"]
+      http: ["https://base-mainnet.g.alchemy.com/v2/i-czB6mQvrz3RVMB6zItL"]
     },
     public: {
-      http: ["https://base.drpc.org"]
+      http: ["https://base-mainnet.g.alchemy.com/v2/i-czB6mQvrz3RVMB6zItL"]
     }
   }
 };
