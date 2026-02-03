@@ -6,6 +6,7 @@ import { MobileNav } from "@/components/layout/mobile-nav";
 import WalletProvider from "@/contexts/wallet";
 import useUserInfo from "@/hooks/use-user-info";
 import { Toaster } from "@/components/ui/toaster";
+import RPCSpeedIndicator from "@/sections/rpc";
 
 const Content = ({ children }: { children: React.ReactNode }) => {
   useUserInfo();
@@ -17,6 +18,7 @@ const Content = ({ children }: { children: React.ReactNode }) => {
       </main>
       <MobileNav />
       <Toaster />
+      <RPCSpeedIndicator />
     </div>
   );
 };
