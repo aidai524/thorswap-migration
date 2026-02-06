@@ -235,9 +235,9 @@ export default function useYThorVesting(): UseYThorVestingReturn {
             index: i,
             amount,
             unlockTime: _unlockTime,
-            widthdrawed: i <= Number(cursorResult || 0)
+            widthdrawed: i < Number(cursorResult || 0)
           });
-          if (i > Number(cursorResult || 0) && _unlockTime <= Date.now()) {
+          if (i >= Number(cursorResult || 0) && _unlockTime <= Date.now()) {
             _withdrawableAmount = _withdrawableAmount.plus(amount);
           }
         }

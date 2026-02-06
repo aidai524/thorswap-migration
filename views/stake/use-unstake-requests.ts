@@ -99,21 +99,22 @@ export default function useUnstakeRequests(): UseUnstakeRequestsReturn {
 
       // Parse results
       const unstakeRequestsData: OperationItem[] = [];
-      const _withdrawableAmount = Big(0);
+      let _withdrawableAmount = Big(0);
       for (let i = 0; i < unstakeRequestCount; i++) {
         const result = detailResults[i];
         if (result) {
+          const _unlockTime = Big(result.unlockTime).mul(1000).toNumber();
           unstakeRequestsData.unshift({
             index: i,
             amount: Big(result.amount)
               .div(10 ** xMetroToken.decimals)
               .toString(),
-            unlockTime: Big(result.unlockTime).mul(1000).toNumber(),
+            unlockTime: _unlockTime,
             type: "unstakeRequest" as const,
-            widthdrawed: i <= Number(cursorResult || 0)
+            widthdrawed: i < Number(cursorResult || 0)
           });
-          if (i > Number(cursorResult || 0)) {
-            _withdrawableAmount.plus(
+          if (i >= Number(cursorResult || 0) && _unlockTime <= Date.now()) {
+            _withdrawableAmount = _withdrawableAmount.plus(
               Big(result.amount).div(10 ** xMetroToken.decimals)
             );
           }

@@ -229,11 +229,11 @@ export default function useContributorVesting(): UseContributorVestingReturn {
           contributorUnstakeRequestsData.push({
             amount,
             unlockTime: _unlockTime,
-            widthdrawed: i <= Number(cursorResult || 0),
+            widthdrawed: i < Number(cursorResult || 0),
             type: "unstakeRequest" as const,
             index: i
           });
-          if (i > Number(cursorResult || 0) && _unlockTime <= Date.now()) {
+          if (i >= Number(cursorResult || 0) && _unlockTime <= Date.now()) {
             _withdrawableAmount.plus(
               Big(amount).div(10 ** xMetroToken.decimals)
             );
