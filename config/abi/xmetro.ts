@@ -1138,22 +1138,41 @@ export default [
     type: "function"
   },
   {
-		"inputs": [
-			{
-				"internalType": "uint256",
-				"name": "maxLocks",
-				"type": "uint256"
-			}
-		],
-		"name": "requestWithdrawUnlockedThor",
-		"outputs": [
-			{
-				"internalType": "uint256",
-				"name": "amountQueued",
-				"type": "uint256"
-			}
-		],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	}
+    inputs: [
+      {
+        internalType: "uint256",
+        name: "maxLocks",
+        type: "uint256"
+      }
+    ],
+    name: "requestWithdrawUnlockedThor",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "amountQueued",
+        type: "uint256"
+      }
+    ],
+    stateMutability: "nonpayable",
+    type: "function"
+  },
+  {
+    inputs: [
+      {
+        internalType: "uint256",
+        name: "maxSchedules",
+        type: "uint256"
+      }
+    ],
+    name: "requestWithdrawUnlockedContributor",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "amountQueued",
+        type: "uint256"
+      }
+    ],
+    stateMutability: "nonpayable",
+    type: "function"
+  }
 ];
