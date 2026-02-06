@@ -3,7 +3,7 @@
 import { StatCard } from "@/components/ui/stat-card";
 import { mockStats } from "@/lib/mock-data";
 import { TrendingUp, Coins, Wallet, Loader2 } from "lucide-react";
-import { formatNumber } from "@/lib/format-number";
+import { formatNumber } from "@/utils/format-number";
 
 export function StakingOverview({
   isLoading,

@@ -18,7 +18,7 @@ import { ThorToken, YThorToken, MetroToken } from "@/config/tokens";
 import useMigrationStore from "@/stores/use-migration";
 import useMigrate from "@/hooks/use-migrate";
 import { ThorMigrationEscrow } from "@/config/contracts";
-import { formatNumber } from "@/lib/format-number";
+import { formatNumber } from "@/utils/format-number";
 import Big from "big.js";
 
 export function MigrationForm({

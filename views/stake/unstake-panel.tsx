@@ -6,7 +6,7 @@ import { Label } from "@/components/ui/label";
 import { ButtonWithAuth } from "@/components/button-with-auth";
 import { xMetroToken } from "@/config/tokens";
 import useUnstake from "@/hooks/use-unstake";
-import { formatNumber } from "@/lib/format-number";
+import { formatNumber } from "@/utils/format-number";
 import dayjs from "@/lib/dayjs";
 import { Loader2 } from "lucide-react";
 

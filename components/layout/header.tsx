@@ -11,10 +11,25 @@ import { Menu } from "lucide-react";
 import { useState } from "react";
 
 const navItems = [
-  { href: "/migrate", label: "Migrate" },
-  { href: "/stake", label: "Stake" },
-  { href: "/rewards", label: "Rewards" },
-  { href: "/history", label: "History" }
+  // { href: "/migrate", label: "Migrate" },
+  { href: "/stake", label: "Stake", actives: ["/stake"] },
+  {
+    href: "/locked-metros",
+    label: "Locked METROs",
+    actives: ["/locked-metros", "/locked-metros/lock", "/locked-metros/claim"]
+  },
+  {
+    href: "/vesting",
+    label: "Vesting",
+    actives: [
+      "/vesting",
+      "/vesting/team",
+      "/vesting/ythor/lock",
+      "/vesting/ythor/claim"
+    ]
+  }
+  // { href: "/rewards", label: "Rewards" },
+  // { href: "/history", label: "History" }
 ];
 
 export function Header() {
@@ -46,7 +61,7 @@ export function Header() {
               href={item.href}
               className={cn(
                 "rounded-lg px-4 py-2 text-sm font-medium transition-colors",
-                pathname === item.href
+                item.actives?.includes(pathname)
                   ? "bg-secondary text-foreground"
                   : "text-muted-foreground hover:bg-secondary/50 hover:text-foreground"
               )}

@@ -18,7 +18,7 @@ import {
   RefreshCw,
   Coins
 } from "lucide-react";
-import { formatNumber } from "@/lib/format-number";
+import { formatNumber } from "@/utils/format-number";
 import useAutocompoundOnce from "@/hooks/use-compound";
 import { useEffect } from "react";
 import Big from "big.js";

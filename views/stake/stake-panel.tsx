@@ -8,13 +8,13 @@ import { ButtonWithApprove } from "@/components/button-with-approve";
 import useStake from "@/hooks/use-stake";
 import { MetroToken, xMetroToken } from "@/config/tokens";
 import { Info, Loader2 } from "lucide-react";
-import { formatNumber } from "@/lib/format-number";
+import { formatNumber } from "@/utils/format-number";
 
 /**
  * Stake panel component
  * Handles staking operations with amount input
  */
-export function StakePanel({ refetchData }: { refetchData: () => void }) {
+export function StakePanel() {
   const {
     stakeAmount,
     setStakeAmount,
@@ -31,7 +31,7 @@ export function StakePanel({ refetchData }: { refetchData: () => void }) {
     setUseContributorStake,
     estimatedXMetroAmount,
     isEstimatingXMetro
-  } = useStake({ onSuccess: refetchData });
+  } = useStake({ onSuccess: () => {} });
 
   // Handle max stake button click
   const handleMaxStake = () => {

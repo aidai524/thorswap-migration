@@ -1,15 +1,39 @@
 export default [
   {
     inputs: [],
-    name: "accRewardPerShare",
+    name: "UNSTAKE_DELAY",
     outputs: [
       {
-        internalType: "uint256",
+        internalType: "uint64",
         name: "",
-        type: "uint256"
+        type: "uint64"
       }
     ],
     stateMutability: "view",
+    type: "function"
+  },
+  {
+    inputs: [
+      {
+        internalType: "uint256",
+        name: "minMetroOut",
+        type: "uint256"
+      },
+      {
+        internalType: "bytes",
+        name: "swapData",
+        type: "bytes"
+      }
+    ],
+    name: "autocompound",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "metroOut",
+        type: "uint256"
+      }
+    ],
+    stateMutability: "nonpayable",
     type: "function"
   },
   {
@@ -29,6 +53,82 @@ export default [
       }
     ],
     stateMutability: "view",
+    type: "function"
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "account",
+        type: "address"
+      }
+    ],
+    name: "balanceOf",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256"
+      }
+    ],
+    stateMutability: "view",
+    type: "function"
+  },
+  {
+    inputs: [
+      {
+        internalType: "uint256",
+        name: "maxSchedules",
+        type: "uint256"
+      }
+    ],
+    name: "claimAndStakeUnlockedContributor",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "sharesMinted",
+        type: "uint256"
+      }
+    ],
+    stateMutability: "nonpayable",
+    type: "function"
+  },
+  {
+    inputs: [
+      {
+        internalType: "uint256",
+        name: "maxLocks",
+        type: "uint256"
+      }
+    ],
+    name: "claimAndStakeUnlockedThor",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "sharesMinted",
+        type: "uint256"
+      }
+    ],
+    stateMutability: "nonpayable",
+    type: "function"
+  },
+  {
+    inputs: [
+      {
+        internalType: "uint256",
+        name: "maxSchedules",
+        type: "uint256"
+      }
+    ],
+    name: "claimAndStakeUnlockedYThor",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "sharesMinted",
+        type: "uint256"
+      }
+    ],
+    stateMutability: "nonpayable",
     type: "function"
   },
   {
@@ -167,84 +267,6 @@ export default [
     type: "function"
   },
   {
-    inputs: [
-      {
-        internalType: "address",
-        name: "user",
-        type: "address"
-      },
-      {
-        internalType: "uint256",
-        name: "amount",
-        type: "uint256"
-      },
-      {
-        internalType: "uint256",
-        name: "lockMonths",
-        type: "uint256"
-      }
-    ],
-    name: "creditLockedTHORFromMigration",
-    outputs: [],
-    stateMutability: "nonpayable",
-    type: "function"
-  },
-  {
-    inputs: [
-      {
-        internalType: "address",
-        name: "user",
-        type: "address"
-      },
-      {
-        internalType: "uint256",
-        name: "amount",
-        type: "uint256"
-      }
-    ],
-    name: "creditLockedVestingFromMigration",
-    outputs: [],
-    stateMutability: "nonpayable",
-    type: "function"
-  },
-  {
-    inputs: [
-      {
-        internalType: "uint256",
-        name: "amount",
-        type: "uint256"
-      }
-    ],
-    name: "depositRewards",
-    outputs: [],
-    stateMutability: "nonpayable",
-    type: "function"
-  },
-  {
-    inputs: [
-      {
-        internalType: "uint256",
-        name: "minMetroOut",
-        type: "uint256"
-      },
-      {
-        internalType: "bytes",
-        name: "swapData",
-        type: "bytes"
-      }
-    ],
-    name: "autocompound",
-    outputs: [
-      {
-        internalType: "uint256",
-        name: "metroOut",
-        type: "uint256"
-      }
-    ],
-    stateMutability: "nonpayable",
-    type: "function"
-  },
-  {
     inputs: [],
     name: "disableAutocompound",
     outputs: [],
@@ -327,20 +349,20 @@ export default [
   {
     inputs: [
       {
-        internalType: "address",
-        name: "",
-        type: "address"
+        internalType: "uint256",
+        name: "maxSchedules",
+        type: "uint256"
       }
     ],
-    name: "rewardDebt",
+    name: "requestWithdrawUnlockedYThor",
     outputs: [
       {
-        internalType: "int256",
-        name: "",
-        type: "int256"
+        internalType: "uint256",
+        name: "amountQueued",
+        type: "uint256"
       }
     ],
-    stateMutability: "view",
+    stateMutability: "nonpayable",
     type: "function"
   },
   {
@@ -378,38 +400,6 @@ export default [
     name: "stakeContributor",
     outputs: [],
     stateMutability: "nonpayable",
-    type: "function"
-  },
-  {
-    inputs: [
-      {
-        internalType: "address",
-        name: "account",
-        type: "address"
-      }
-    ],
-    name: "balanceOf",
-    outputs: [
-      {
-        internalType: "uint256",
-        name: "",
-        type: "uint256"
-      }
-    ],
-    stateMutability: "view",
-    type: "function"
-  },
-  {
-    inputs: [],
-    name: "swapAdapter",
-    outputs: [
-      {
-        internalType: "contract ISwapAdapter",
-        name: "",
-        type: "address"
-      }
-    ],
-    stateMutability: "view",
     type: "function"
   },
   {
@@ -606,6 +596,92 @@ export default [
     type: "function"
   },
   {
+    inputs: [],
+    name: "totalSupply",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256"
+      }
+    ],
+    stateMutability: "view",
+    type: "function"
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "to",
+        type: "address"
+      },
+      {
+        internalType: "uint256",
+        name: "amount",
+        type: "uint256"
+      }
+    ],
+    name: "transfer",
+    outputs: [
+      {
+        internalType: "bool",
+        name: "",
+        type: "bool"
+      }
+    ],
+    stateMutability: "nonpayable",
+    type: "function"
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "from",
+        type: "address"
+      },
+      {
+        internalType: "address",
+        name: "to",
+        type: "address"
+      },
+      {
+        internalType: "uint256",
+        name: "amount",
+        type: "uint256"
+      }
+    ],
+    name: "transferFrom",
+    outputs: [
+      {
+        internalType: "bool",
+        name: "",
+        type: "bool"
+      }
+    ],
+    stateMutability: "nonpayable",
+    type: "function"
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "newOwner",
+        type: "address"
+      }
+    ],
+    name: "transferOwnership",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function"
+  },
+  {
+    inputs: [],
+    name: "unpause",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function"
+  },
+  {
     inputs: [
       {
         internalType: "address",
@@ -613,7 +689,64 @@ export default [
         type: "address"
       }
     ],
-    name: "unstakeCursor",
+    name: "unstakeCursorContributor",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256"
+      }
+    ],
+    stateMutability: "view",
+    type: "function"
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "",
+        type: "address"
+      }
+    ],
+    name: "unstakeCursorFree",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256"
+      }
+    ],
+    stateMutability: "view",
+    type: "function"
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "",
+        type: "address"
+      }
+    ],
+    name: "unstakeCursorThor",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256"
+      }
+    ],
+    stateMutability: "view",
+    type: "function"
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "",
+        type: "address"
+      }
+    ],
+    name: "unstakeCursorYThor",
     outputs: [
       {
         internalType: "uint256",
@@ -637,7 +770,7 @@ export default [
         type: "uint256"
       }
     ],
-    name: "unstakeRequest",
+    name: "unstakeRequestContributor",
     outputs: [
       {
         components: [
@@ -668,7 +801,7 @@ export default [
         type: "address"
       }
     ],
-    name: "unstakeRequestCount",
+    name: "unstakeRequestCountContributor",
     outputs: [
       {
         internalType: "uint256",
@@ -682,12 +815,177 @@ export default [
   {
     inputs: [
       {
+        internalType: "address",
+        name: "user",
+        type: "address"
+      }
+    ],
+    name: "unstakeRequestCountFree",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256"
+      }
+    ],
+    stateMutability: "view",
+    type: "function"
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "user",
+        type: "address"
+      }
+    ],
+    name: "unstakeRequestCountThor",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256"
+      }
+    ],
+    stateMutability: "view",
+    type: "function"
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "user",
+        type: "address"
+      }
+    ],
+    name: "unstakeRequestCountYThor",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256"
+      }
+    ],
+    stateMutability: "view",
+    type: "function"
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "user",
+        type: "address"
+      },
+      {
+        internalType: "uint256",
+        name: "index",
+        type: "uint256"
+      }
+    ],
+    name: "unstakeRequestFree",
+    outputs: [
+      {
+        components: [
+          {
+            internalType: "uint128",
+            name: "amount",
+            type: "uint128"
+          },
+          {
+            internalType: "uint64",
+            name: "unlockTime",
+            type: "uint64"
+          }
+        ],
+        internalType: "struct xMETRO.UnstakeRequest",
+        name: "",
+        type: "tuple"
+      }
+    ],
+    stateMutability: "view",
+    type: "function"
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "user",
+        type: "address"
+      },
+      {
+        internalType: "uint256",
+        name: "index",
+        type: "uint256"
+      }
+    ],
+    name: "unstakeRequestThor",
+    outputs: [
+      {
+        components: [
+          {
+            internalType: "uint128",
+            name: "amount",
+            type: "uint128"
+          },
+          {
+            internalType: "uint64",
+            name: "unlockTime",
+            type: "uint64"
+          }
+        ],
+        internalType: "struct xMETRO.UnstakeRequest",
+        name: "",
+        type: "tuple"
+      }
+    ],
+    stateMutability: "view",
+    type: "function"
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "user",
+        type: "address"
+      },
+      {
+        internalType: "uint256",
+        name: "index",
+        type: "uint256"
+      }
+    ],
+    name: "unstakeRequestYThor",
+    outputs: [
+      {
+        components: [
+          {
+            internalType: "uint128",
+            name: "amount",
+            type: "uint128"
+          },
+          {
+            internalType: "uint64",
+            name: "unlockTime",
+            type: "uint64"
+          }
+        ],
+        internalType: "struct xMETRO.UnstakeRequest",
+        name: "",
+        type: "tuple"
+      }
+    ],
+    stateMutability: "view",
+    type: "function"
+  },
+  {
+    inputs: [
+      {
         internalType: "uint256",
         name: "maxRequests",
         type: "uint256"
       }
     ],
-    name: "withdraw",
+    name: "withdrawContributor",
     outputs: [
       {
         internalType: "uint256",
@@ -702,11 +1000,11 @@ export default [
     inputs: [
       {
         internalType: "uint256",
-        name: "maxSchedules",
+        name: "maxRequests",
         type: "uint256"
       }
     ],
-    name: "withdrawUnlockedContributor",
+    name: "withdrawFree",
     outputs: [
       {
         internalType: "uint256",
@@ -721,11 +1019,11 @@ export default [
     inputs: [
       {
         internalType: "uint256",
-        name: "maxLocks",
+        name: "maxRequests",
         type: "uint256"
       }
     ],
-    name: "withdrawUnlockedThor",
+    name: "withdrawThor",
     outputs: [
       {
         internalType: "uint256",
@@ -740,11 +1038,11 @@ export default [
     inputs: [
       {
         internalType: "uint256",
-        name: "maxSchedules",
+        name: "maxRequests",
         type: "uint256"
       }
     ],
-    name: "withdrawUnlockedYThor",
+    name: "withdrawYThor",
     outputs: [
       {
         internalType: "uint256",
@@ -840,16 +1138,22 @@ export default [
     type: "function"
   },
   {
-    inputs: [],
-    name: "UNSTAKE_DELAY",
-    outputs: [
-      {
-        internalType: "uint64",
-        name: "",
-        type: "uint64"
-      }
-    ],
-    stateMutability: "view",
-    type: "function"
-  }
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "maxLocks",
+				"type": "uint256"
+			}
+		],
+		"name": "requestWithdrawUnlockedThor",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "amountQueued",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	}
 ];

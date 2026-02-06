@@ -1,33 +1,42 @@
 "use client";
 
-import { StakeOperations } from "@/views/stake/stake-operations";
-import { StatCard } from "@/components/ui/stat-card";
-import { mockStats } from "@/lib/mock-data";
-import { TrendingUp } from "lucide-react";
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { History } from "lucide-react";
+import Stake from "@/views/stake";
+import { RewardsHistoryDialog } from "@/views/reward/rewards-history-dialog";
 
 export default function StakePage() {
-  // const { stakeData, isLoading, refetch } = useStakeData();
+  const [historyDialogOpen, setHistoryDialogOpen] = useState(false);
+
   return (
-    <div className="space-y-8 w-2xl mx-auto">
+    <div className="space-y-8">
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-semibold tracking-tight sm:text-3xl">
-            Stake
+            METRO Staking
           </h1>
           <p className="mt-2 text-muted-foreground">
-            Manage your METRO staking positions and earn USDC rewards
+            Stake METRO to earn USDC rewards and trading discounts
+          </p>
+          <p className="text-muted-foreground">
+            Turn on autocompound to auto convert rewards to more $xMETRO
           </p>
         </div>
-        <StatCard
-          label="APR"
-          value={mockStats.apr}
-          suffix="%"
-          icon={<TrendingUp className="h-5 w-5" />}
-        />
+        <Button
+          variant="outline"
+          onClick={() => setHistoryDialogOpen(true)}
+          className="flex items-center gap-2"
+        >
+          <History className="h-4 w-4" />
+          Reward History
+        </Button>
       </div>
-      {/* <StakingOverview isLoading={isLoading} stakeData={stakeData} /> */}
-
-      <StakeOperations refetchData={() => {}} />
+      <Stake />
+      <RewardsHistoryDialog
+        open={historyDialogOpen}
+        onOpenChange={setHistoryDialogOpen}
+      />
     </div>
   );
 }

@@ -13,7 +13,7 @@ import {
 } from "@/components/ui/pagination";
 import { History, ExternalLink, Loader2, AlertCircle } from "lucide-react";
 import useRewardsHistory from "@/hooks/use-rewards-history";
-import { formatNumber } from "@/lib/format-number";
+import { formatNumber } from "@/utils/format-number";
 
 /**
  * Format transaction hash for display

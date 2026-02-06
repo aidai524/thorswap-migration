@@ -29,7 +29,7 @@ import { Badge } from "@/components/ui/badge";
 import { ExternalLink, Loader2, AlertCircle } from "lucide-react";
 import useDepositGasRecords from "@/hooks/use-deposit-gas-records";
 import useWithdrawGasRecords from "@/hooks/use-withdraw-gas-records";
-import { formatNumber } from "@/lib/format-number";
+import { formatNumber } from "@/utils/format-number";
 import dayjs from "@/lib/dayjs";
 
 /**
