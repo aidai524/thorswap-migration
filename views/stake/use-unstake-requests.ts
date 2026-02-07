@@ -104,19 +104,18 @@ export default function useUnstakeRequests(): UseUnstakeRequestsReturn {
         const result = detailResults[i];
         if (result) {
           const _unlockTime = Big(result.unlockTime).mul(1000).toNumber();
+          const amount = Big(result.amount)
+            .div(10 ** xMetroToken.decimals)
+            .toString();
           unstakeRequestsData.unshift({
             index: i,
-            amount: Big(result.amount)
-              .div(10 ** xMetroToken.decimals)
-              .toString(),
+            amount,
             unlockTime: _unlockTime,
             type: "unstakeRequest" as const,
             widthdrawed: i < Number(cursorResult || 0)
           });
           if (i >= Number(cursorResult || 0) && _unlockTime <= Date.now()) {
-            _withdrawableAmount = _withdrawableAmount.plus(
-              Big(result.amount).div(10 ** xMetroToken.decimals)
-            );
+            _withdrawableAmount = _withdrawableAmount.plus(amount);
           }
         }
       }
