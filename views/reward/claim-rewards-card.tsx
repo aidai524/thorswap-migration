@@ -18,8 +18,13 @@ import { AutocompoundDialog } from "./autocompound-dialog";
 import { useState } from "react";
 
 export function ClaimRewardsCard() {
-  const { claiming, claimableAmount, isLoadingClaimable, claimRewards } =
-    useClaimRewards();
+  const {
+    claiming,
+    claimableAmount,
+    isLoadingClaimable,
+    claimRewards,
+    refreshClaimable
+  } = useClaimRewards();
   const [showAutocompoundDialog, setShowAutocompoundDialog] = useState(false);
 
   return (
@@ -87,6 +92,7 @@ export function ClaimRewardsCard() {
         open={showAutocompoundDialog}
         onOpenChange={setShowAutocompoundDialog}
         claimableAmount={claimableAmount}
+        onSuccess={refreshClaimable}
       />
     </>
   );

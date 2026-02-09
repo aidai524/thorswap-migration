@@ -29,12 +29,14 @@ interface AutocompoundDialogProps {
   /** Callback when dialog open state changes */
   onOpenChange: (open: boolean) => void;
   claimableAmount: string;
+  onSuccess: () => void;
 }
 
 export function AutocompoundDialog({
   open,
   onOpenChange,
-  claimableAmount
+  claimableAmount,
+  onSuccess
 }: AutocompoundDialogProps) {
   const {
     autocompounding,
@@ -45,6 +47,7 @@ export function AutocompoundDialog({
   } = useAutocompoundOnce({
     onSuccess() {
       onOpenChange(false);
+      onSuccess();
     }
   });
 
