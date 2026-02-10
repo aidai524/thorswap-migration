@@ -146,7 +146,7 @@ export function RewardsHistoryDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-2xl max-h-[80vh] overflow-hidden flex flex-col">
+      <DialogContent className="sm:max-w-2xl flex flex-col">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <History className="h-5 w-5 text-muted-foreground" />
@@ -161,28 +161,25 @@ export function RewardsHistoryDialog({
             View all your reward claim and compound history
           </DialogDescription>
         </DialogHeader>
-        <div className="flex-1 overflow-y-auto mt-4">
-          {/* Loading state */}
-          {isLoading && (
-            <div className="flex items-center justify-center py-12">
-              <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
-            </div>
-          )}
+        <div className="mt-4">
+          <div className="h-[50vh] overflow-y-auto">
+            {/* Loading state */}
+            {isLoading && (
+              <div className="h-full w-full flex items-center justify-center">
+                <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+              </div>
+            )}
+            {/* Error state */}
+            {error && !isLoading && (
+              <div className="flex flex-col items-center justify-center gap-2 py-12">
+                <AlertCircle className="h-8 w-8 text-destructive" />
+                <p className="text-sm text-destructive">{error}</p>
+              </div>
+            )}
 
-          {/* Error state */}
-          {error && !isLoading && (
-            <div className="flex flex-col items-center justify-center gap-2 py-12">
-              <AlertCircle className="h-8 w-8 text-destructive" />
-              <p className="text-sm text-destructive">{error}</p>
-            </div>
-          )}
-
-          {/* Records list */}
-          {!isLoading && !error && (
-            <>
-              <div className="space-y-3">
-                {records.length > 0 ? (
-                  records.map((record, index) => {
+            <div className="space-y-3">
+              {records.length > 0
+                ? records.map((record, index) => {
                     // Map API response fields to display format
                     // Adjust these field names based on actual API response structure
                     const txHash =
@@ -242,68 +239,90 @@ export function RewardsHistoryDialog({
                       </div>
                     );
                   })
-                ) : (
-                  <p className="py-8 text-center text-sm text-muted-foreground">
-                    No reward history yet
-                  </p>
-                )}
-              </div>
+                : !isLoading && (
+                    <p className="flex items-center justify-center h-[40vh] text-sm text-muted-foreground">
+                      No reward history yet
+                    </p>
+                  )}
+            </div>
+          </div>
 
-              {/* Pagination */}
-              {totalPages > 1 && (
-                <div className="mt-6">
-                  <Pagination>
-                    <PaginationContent>
-                      <PaginationItem>
-                        <PaginationPrevious
-                          onClick={handlePrevClick}
-                          href="#"
-                          className={
-                            currentPage === 1
-                              ? "pointer-events-none opacity-50"
-                              : "cursor-pointer"
-                          }
-                        />
-                      </PaginationItem>
-
-                      {generatePageNumbers(currentPage, totalPages).map(
-                        (page, index) => (
-                          <PaginationItem key={index}>
-                            {page === "ellipsis" ? (
-                              <PaginationEllipsis />
-                            ) : (
-                              <PaginationLink
-                                onClick={(e) => handlePageClick(e, page)}
-                                href="#"
-                                isActive={currentPage === page}
-                                className="cursor-pointer"
-                              >
-                                {page}
-                              </PaginationLink>
-                            )}
-                          </PaginationItem>
-                        )
-                      )}
-
-                      <PaginationItem>
-                        <PaginationNext
-                          onClick={handleNextClick}
-                          href="#"
-                          className={
-                            currentPage === totalPages
-                              ? "pointer-events-none opacity-50"
-                              : "cursor-pointer"
-                          }
-                        />
-                      </PaginationItem>
-                    </PaginationContent>
-                  </Pagination>
-                </div>
-              )}
-            </>
-          )}
+          {/* Pagination */}
+          <div className="mt-6">
+            <PaginationComponent
+              currentPage={currentPage}
+              totalPages={totalPages}
+              handlePrevClick={handlePrevClick}
+              handleNextClick={handleNextClick}
+              handlePageClick={handlePageClick}
+            />
+          </div>
         </div>
       </DialogContent>
     </Dialog>
   );
 }
+
+const PaginationComponent = ({
+  currentPage,
+  totalPages,
+  handlePrevClick,
+  handleNextClick,
+  handlePageClick
+}: {
+  currentPage: number;
+  totalPages: number;
+  handlePrevClick: (e: React.MouseEvent<HTMLAnchorElement>) => Promise<void>;
+  handleNextClick: (e: React.MouseEvent<HTMLAnchorElement>) => Promise<void>;
+  handlePageClick: (
+    e: React.MouseEvent<HTMLAnchorElement>,
+    page: number
+  ) => void;
+}) => {
+  return (
+    <Pagination>
+      <PaginationContent>
+        <PaginationItem>
+          <PaginationPrevious
+            onClick={handlePrevClick}
+            href="#"
+            className={
+              currentPage === 1
+                ? "pointer-events-none opacity-50"
+                : "cursor-pointer"
+            }
+          />
+        </PaginationItem>
+
+        {generatePageNumbers(currentPage, totalPages).map((page, index) => (
+          <PaginationItem key={index}>
+            {page === "ellipsis" ? (
+              <PaginationEllipsis />
+            ) : (
+              <PaginationLink
+                onClick={(e) => handlePageClick(e, page)}
+                href="#"
+                isActive={currentPage === page}
+                className="cursor-pointer"
+              >
+                {page}
+              </PaginationLink>
+            )}
+          </PaginationItem>
+        ))}
+
+        <PaginationItem>
+          <PaginationNext
+            onClick={handleNextClick}
+            href="#"
+            className={
+              currentPage === totalPages
+                ? "pointer-events-none opacity-50"
+                : "cursor-pointer"
+            }
+          />
+        </PaginationItem>
+      </PaginationContent>
+    </Pagination>
+  );
+};

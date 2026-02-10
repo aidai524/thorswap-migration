@@ -76,6 +76,7 @@ export default function useRewardsHistory(
 
       setIsLoading(true);
       setError(null);
+      setRecords([]);
 
       try {
         const response: RewardRecordsResponse =
@@ -84,10 +85,10 @@ export default function useRewardsHistory(
             page: targetPage,
             page_size: targetPageSize
           });
- 
+
         setRecords(response.data || []);
         setTotal(response.total || 0);
-        setCurrentPage(response.total_page || targetPage);
+        setCurrentPage(targetPage);
         if (newPageSize !== undefined) {
           setPageSize(targetPageSize);
         }
