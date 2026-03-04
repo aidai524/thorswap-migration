@@ -71,7 +71,7 @@ export default function useContractConfig(): UseContractConfigReturn {
     is3MExpired: false,
     isYThorExpired: false
   });
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const { publicClient,account } = useWallet();
   const { setStaticConfig } = useContractConfigStore();

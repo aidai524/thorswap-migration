@@ -73,7 +73,7 @@ export function StakePanel() {
     if (currentError && !isConfigLoading) {
       const timer = setTimeout(() => {
         setDisplayedErrorMessage(currentError);
-      }, 1000);
+      }, 500);
 
       return () => clearTimeout(timer);
     } else {
@@ -81,7 +81,10 @@ export function StakePanel() {
     }
   }, [currentError, isConfigLoading]);
 
-
+  const onMigrate = async () => {
+    await refetchConfig();
+    migrate();
+  };
 
   return (
     <div>
@@ -219,7 +222,7 @@ export function StakePanel() {
             chainId={selectedToken.chainId}
             amount={amount || "0.000001"}
             spender={ThorMigrationEscrow}
-            onAction={migrate}
+            onAction={onMigrate}
             actionLoading={isLoading || isConfigLoading}
             actionDisabled={
               isWrongNetwork || isLoading || !!(amountError || migrationError)
