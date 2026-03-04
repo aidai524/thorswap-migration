@@ -36,7 +36,7 @@ const useContractConfigStore = create<ContractConfigState>()(
     }),
     {
       name: "contract-config-storage", // localStorage key
-      version: 0.1,
+      version: 0.11,
       storage: createJSONStorage(() => localStorage)
     }
   )
