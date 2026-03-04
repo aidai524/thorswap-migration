@@ -1,17 +1,11 @@
 "use client";
 
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useWallet } from "@/contexts/wallet";
 import { AmountInput } from "@/views/migrate/amount-input";
 import { ButtonWithApprove } from "@/components/button-with-approve";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle
-} from "@/components/ui/card";
-import { AlertTriangle, ArrowRight, Clock, Lock, Info } from "lucide-react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { AlertTriangle, Clock, Lock, Info } from "lucide-react";
 import { ThorToken, MetroToken } from "@/config/tokens";
 import useMigrationStore from "@/stores/use-migration";
 import useMigrate from "@/hooks/use-migrate";
@@ -24,7 +18,11 @@ import Big from "big.js";
 export function StakePanel() {
   const { amount, thorPhase, set } = useMigrationStore();
   const { account } = useWallet();
-  const { config, refetch: refetchConfig } = useContractConfig();
+  const {
+    config,
+    isLoading: isConfigLoading,
+    refetch: refetchConfig
+  } = useContractConfig();
   const {
     migrate,
     isLoading,
@@ -66,7 +64,24 @@ export function StakePanel() {
     }
   }, [is10MAvailable, thorPhase, set]);
 
-  const errorMessage = amountError || migrationError;
+  const [displayedErrorMessage, setDisplayedErrorMessage] = useState<
+    string | null
+  >(null);
+  const currentError = amountError || migrationError;
+
+  useEffect(() => {
+    if (currentError && !isConfigLoading) {
+      const timer = setTimeout(() => {
+        setDisplayedErrorMessage(currentError);
+      }, 1000);
+
+      return () => clearTimeout(timer);
+    } else {
+      setDisplayedErrorMessage(null);
+    }
+  }, [currentError, isConfigLoading]);
+
+
 
   return (
     <div>
@@ -164,9 +179,9 @@ export function StakePanel() {
           </div>
 
           {/* Error Message */}
-          {errorMessage && (
+          {displayedErrorMessage && (
             <div className="rounded-lg border border-destructive/50 bg-destructive/10 p-3 text-sm text-destructive">
-              {errorMessage}
+              {displayedErrorMessage}
             </div>
           )}
 
@@ -205,8 +220,10 @@ export function StakePanel() {
             amount={amount || "0.000001"}
             spender={ThorMigrationEscrow}
             onAction={migrate}
-            actionLoading={isLoading}
-            actionDisabled={isWrongNetwork || isLoading || !!errorMessage}
+            actionLoading={isLoading || isConfigLoading}
+            actionDisabled={
+              isWrongNetwork || isLoading || !!(amountError || migrationError)
+            }
             actionText="Lock"
           />
         </CardContent>
