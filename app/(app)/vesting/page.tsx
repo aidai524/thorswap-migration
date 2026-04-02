@@ -1,5 +1,5 @@
 import { redirect } from "next/navigation";
 
 export default function VestingPage() {
-  return redirect("/vesting/team");
+  return redirect("/vesting/ythor/migrate");
 }

@@ -2,8 +2,8 @@
 
 import { useWallet } from "@/contexts/wallet";
 import { Card, CardContent } from "@/components/ui/card";
-import { AutocompoundCard } from "./autocompound-card";
-import { ClaimRewardsCard } from "./claim-rewards-card";
+import { RewardsPageBlock } from "@/sections/rewards";
+import { RewardsHistory } from "./rewards-history";
 
 export function ClaimRewards() {
   const { account } = useWallet();
@@ -21,11 +21,9 @@ export function ClaimRewards() {
   }
 
   return (
-    <>
-      <div className="grid gap-6 lg:grid-cols-2">
-        <ClaimRewardsCard />
-        <AutocompoundCard />
-      </div>
-    </>
+    <div>
+      <RewardsPageBlock />
+      <RewardsHistory />
+    </div>
   );
 }

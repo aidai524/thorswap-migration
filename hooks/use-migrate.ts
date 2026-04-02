@@ -27,6 +27,8 @@ interface UseMigrateReturn {
   migrationError: string | null;
   tokenBalance: string;
   selectedToken: Token;
+  /** ERC20 balance fetch loading */
+  isTokenBalanceLoading: boolean;
 }
 
 /**
@@ -55,8 +57,11 @@ export default function useMigrate(
 
   // Get selected token for balance check
   const selectedToken = token === "THOR" ? ThorToken : YThorToken;
-  const { balance: tokenBalance, refetch: refetchTokenBalance } =
-    useTokenBalance({ token: selectedToken });
+  const {
+    balance: tokenBalance,
+    refetch: refetchTokenBalance,
+    isLoading: isTokenBalanceLoading
+  } = useTokenBalance({ token: selectedToken });
 
   /**
    * Validate amount based on requirements:
@@ -339,6 +344,7 @@ export default function useMigrate(
     tokenBalance,
     amountError,
     migrationError,
-    selectedToken
+    selectedToken,
+    isTokenBalanceLoading
   };
 }

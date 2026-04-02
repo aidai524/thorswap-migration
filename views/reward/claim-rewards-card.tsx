@@ -54,7 +54,7 @@ export function ClaimRewardsCard() {
 
           <div className="flex items-center justify-between grid grid-cols-2 gap-4">
             <Button
-              variant="secondary"
+              variant="migrationSecondary"
               className="h-[40px] cursor-pointer"
               onClick={() => setShowAutocompoundDialog(true)}
             >

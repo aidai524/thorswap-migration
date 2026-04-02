@@ -9,6 +9,7 @@ export function ButtonWithAuth({
   loading,
   disabled,
   children,
+  className,
   ...rest
 }: {
   chainId: number;
@@ -23,7 +24,7 @@ export function ButtonWithAuth({
     return (
       <Button
         {...rest}
-        className="cursor-pointer w-full"
+        className={clsx("cursor-pointer w-full", className)}
         onClick={() => connect?.()}
       >
         Connect Wallet
@@ -35,7 +36,7 @@ export function ButtonWithAuth({
     return (
       <Button
         {...rest}
-        className="w-full cursor-pointer"
+        className={clsx("w-full cursor-pointer", className)}
         size="lg"
         onClick={() => {
           switchChain?.(chainId);
@@ -59,7 +60,8 @@ export function ButtonWithAuth({
       {...rest}
       className={clsx(
         "w-full",
-        disabled ? "cursor-not-allowed" : "cursor-pointer"
+        disabled ? "cursor-not-allowed" : "cursor-pointer",
+        className
       )}
       size="lg"
       onClick={onClick}

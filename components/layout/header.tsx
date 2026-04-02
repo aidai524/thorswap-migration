@@ -9,6 +9,7 @@ import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import { Menu } from "lucide-react";
 import { useState } from "react";
+import Image from "next/image";
 
 const navItems = [
   // { href: "/migrate", label: "Migrate" },
@@ -16,7 +17,11 @@ const navItems = [
   {
     href: "/locked-metros",
     label: "Locked METROs",
-    actives: ["/locked-metros", "/locked-metros/lock", "/locked-metros/claim"]
+    actives: [
+      "/locked-metros",
+      "/locked-metros/migrate",
+      "/locked-metros/locked"
+    ]
   },
   {
     href: "/vesting",
@@ -24,8 +29,8 @@ const navItems = [
     actives: [
       "/vesting",
       "/vesting/team",
-      "/vesting/ythor/lock",
-      "/vesting/ythor/claim"
+      "/vesting/ythor/migrate",
+      "/vesting/ythor/schedules"
     ]
   }
   // { href: "/rewards", label: "Rewards" },
@@ -37,20 +42,11 @@ export function Header() {
   const [open, setOpen] = useState(false);
 
   return (
-    <header className="sticky top-0 z-50 border-b border-border bg-background/80 backdrop-blur-xl">
+    <header className="fixed top-0 left-0 right-0 z-40 border-b border-border bg-[#111414]">
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
         {/* Logo */}
         <Link href="/" className="flex items-center gap-2">
-          <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary">
-            <svg
-              viewBox="0 0 24 24"
-              className="h-5 w-5 text-primary-foreground"
-              fill="currentColor"
-            >
-              <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" />
-            </svg>
-          </div>
-          <span className="text-lg font-semibold tracking-tight">METRO</span>
+          <Image src="/logo.svg" alt="METRO" width={166} height={24} />
         </Link>
 
         {/* Desktop Navigation */}
@@ -62,8 +58,8 @@ export function Header() {
               className={cn(
                 "rounded-lg px-4 py-2 text-sm font-medium transition-colors",
                 item.actives?.includes(pathname)
-                  ? "bg-secondary text-foreground"
-                  : "text-muted-foreground hover:bg-secondary/50 hover:text-foreground"
+                  ? "text-[#f6f6f6]"
+                  : "text-[#F6F6F6]/50 hover:text-[#f6f6f6]"
               )}
             >
               {item.label}
@@ -72,7 +68,7 @@ export function Header() {
         </nav>
 
         {/* Wallet Section */}
-        <div className="flex items-center gap-2 sm:gap-3">
+        <div className="flex items-center gap-2 sm:gap-3 text-[#F6F6F6]">
           <NetworkIndicator />
           <WalletButton />
 
@@ -93,7 +89,7 @@ export function Header() {
                     onClick={() => setOpen(false)}
                     className={cn(
                       "rounded-lg px-4 py-3 text-base font-medium transition-colors",
-                      pathname === item.href
+                      item.actives?.includes(pathname)
                         ? "bg-secondary text-foreground"
                         : "text-muted-foreground hover:bg-secondary/50 hover:text-foreground"
                     )}

@@ -1,23 +1,8 @@
 import { formatNumber } from "@/utils/format-number";
 import { OperationItem } from "./types";
-import { Lock, Clock, TrendingUp } from "lucide-react";
+import { TrendingUp } from "lucide-react";
 
-export const getOperationLabel = (data: OperationItem): string => {
-  switch (data.type) {
-    case "thorLock3m":
-      return "3M THOR Lock";
-    case "thorLock10m":
-      return "10M THOR Lock";
-    case "yThorVesting":
-      return "yTHOR Vesting";
-    case "unstakeRequest":
-      return "";
-    case "contributorVesting":
-      return "Contributor Vesting";
-    default:
-      return "Unknown";
-  }
-};
+
 
 export const getOperationIcon = (data: OperationItem) => {
   switch (data.type) {
@@ -38,13 +23,13 @@ export const getOperationAmount = (data: OperationItem): string => {
   switch (data.type) {
     case "thorLock3m":
     case "thorLock10m":
-      return formatNumber(data.amount, 2, true) + " METRO";
+      return formatNumber(data.amount, 2, true);
     case "yThorVesting":
-      return formatNumber(data.totalAmount, 2, true) + " METRO";
+      return formatNumber(data.totalAmount, 2, true);
     case "contributorVesting":
-      return formatNumber(data.totalAmount, 2, true) + " METRO";
+      return formatNumber(data.totalAmount, 2, true);
     case "unstakeRequest":
-      return formatNumber(data.amount, 2, true) + " METRO";
+      return formatNumber(data.amount, 2, true);
     default:
       return "0";
   }

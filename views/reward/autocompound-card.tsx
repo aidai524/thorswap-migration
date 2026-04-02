@@ -28,12 +28,6 @@ import {
 import { xMetroToken } from "@/config/tokens";
 
 export function AutocompoundCard() {
-  const { isEnabling, isDisabling, enableAutocompound, disableAutocompound } =
-    useAutocompound(async (enabled: boolean) => {
-      await refreshBalance();
-      setIsAutocompoundEnabled(enabled);
-    });
-
   const {
     // depositing,
     // balanceGasFee,
@@ -44,6 +38,12 @@ export function AutocompoundCard() {
     isAutocompoundEnabled,
     setIsAutocompoundEnabled
   } = useAutocompoundGas();
+
+  const { isEnabling, isDisabling, enableAutocompound, disableAutocompound } =
+    useAutocompound(async (enabled: boolean) => {
+      await refreshBalance();
+      setIsAutocompoundEnabled(enabled);
+    });
 
   // const { withdrawing, withdrawGas } = useWithdrawAutocompoundGas();
 
@@ -127,7 +127,7 @@ export function AutocompoundCard() {
         {isAutocompoundEnabled ? (
           <ButtonWithAuth
             chainId={xMetroToken.chainId}
-            variant="secondary"
+            variant="migrationSecondary"
             className="w-full"
             size="lg"
             onClick={disableAutocompound}
@@ -147,7 +147,7 @@ export function AutocompoundCard() {
         ) : (
           <ButtonWithAuth
             chainId={xMetroToken.chainId}
-            variant="secondary"
+            variant="migrationSecondary"
             className="w-full"
             size="lg"
             onClick={enableAutocompound}

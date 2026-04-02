@@ -224,6 +224,7 @@ export default function useStake({
         // stake method returns mintedShares directly
         const mintedShares = result.result as bigint;
         const xMetroAmount = formatUnits(mintedShares, 18);
+
         setEstimatedXMetroAmount(xMetroAmount);
       } catch (err: any) {
         // Check if request was aborted

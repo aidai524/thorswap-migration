@@ -1,26 +1,15 @@
-import useUnstakeRequests from "@/views/stake/use-unstake-requests";
-import Rewards from "./rewards";
-import StakeOperations from "./stake-operations";
-import UnstakeHistory from "./unstake-history";
+import { AutoCompoundSection } from "@/sections/auto-compound";
+import { RewardsSection } from "@/sections/rewards";
+import StakeUnstakePanel from "./stake-unstake-panel";
 
 export default function Stake() {
-  const { isLoading, error, unstakeRequests, refresh, withdrawableAmount } =
-    useUnstakeRequests();
   return (
-    <>
-      <Rewards />
-      <StakeOperations
-        refetchData={() => {
-          refresh();
-        }}
-      />
-      <UnstakeHistory
-        unstakeRequests={unstakeRequests}
-        isLoading={isLoading}
-        error={error}
-        refresh={refresh}
-        withdrawableAmount={withdrawableAmount}
-      />
-    </>
+    <div className="flex flex-col items-start gap-6 lg:flex-row lg:gap-[24px]">
+      <StakeUnstakePanel />
+      <div className="flex flex-col gap-4">
+        <RewardsSection variant="stake" />
+        <AutoCompoundSection variant="stake" />
+      </div>
+    </div>
   );
 }

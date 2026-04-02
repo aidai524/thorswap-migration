@@ -157,7 +157,7 @@ export default function useUserOperations(): UseUserOperationsReturn {
         {
           address: contractAddress,
           abi: xMetroAbi,
-          functionName: "unstakeRequestCount",
+          functionName: "unstakeRequestCountFree",
           args: [userAddress]
         }
       ];
@@ -218,7 +218,7 @@ export default function useUserOperations(): UseUserOperationsReturn {
         detailCalls.push({
           address: contractAddress,
           abi: xMetroAbi,
-          functionName: "unstakeRequest",
+          functionName: "unstakeRequestFree",
           args: [userAddress, BigInt(i)]
         });
       }

@@ -1,20 +1,25 @@
 "use client";
 
+import { useState } from "react";
 import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { ButtonWithApprove } from "@/components/button-with-approve";
+import { TokenAmountPanel } from "@/components/common/token-amount-panel";
 import useStake from "@/hooks/use-stake";
 import { MetroToken, xMetroToken } from "@/config/tokens";
-import { Info, Loader2 } from "lucide-react";
+import { Loader2 } from "lucide-react";
 import { formatNumber } from "@/utils/format-number";
+import Big from "big.js";
+import { StakeConfirmDialog } from "./stake-confirm-dialog";
 
 /**
  * Stake panel component
  * Handles staking operations with amount input
  */
 export function StakePanel() {
+  const [stakeConfirmOpen, setStakeConfirmOpen] = useState(false);
+
   const {
     stakeAmount,
     setStakeAmount,
@@ -31,11 +36,25 @@ export function StakePanel() {
     setUseContributorStake,
     estimatedXMetroAmount,
     isEstimatingXMetro
-  } = useStake({ onSuccess: () => {} });
+  } = useStake({
+    onSuccess: () => setStakeConfirmOpen(false)
+  });
 
   // Handle max stake button click
   const handleMaxStake = () => {
     setStakeAmount(tokenBalance || "");
+  };
+  const handleStakePercentage = (percentage: number) => {
+    if (!tokenBalance) {
+      return;
+    }
+
+    const amount = Big(tokenBalance)
+      .mul(percentage)
+      .div(100)
+      .toFixed(18)
+      .replace(/\.?0+$/, "");
+    setStakeAmount(amount);
   };
 
   // Check if stake button should be disabled
@@ -87,67 +106,61 @@ export function StakePanel() {
           )}
         </div>
       )}
-      <div className="space-y-2">
-        <Label htmlFor="stake-amount">Amount</Label>
-        <div className="relative">
-          <Input
-            id="stake-amount"
-            type="number"
-            placeholder="0.00"
-            value={stakeAmount}
-            onChange={(e) => setStakeAmount(e.target.value)}
-            className="h-12 pr-20 text-lg"
-          />
-          <div className="absolute right-2 top-1/2 -translate-y-1/2">
-            <Button
-              variant="secondary"
-              size="sm"
-              onClick={handleMaxStake}
-              className="cursor-pointer"
-              disabled={isTokenBalanceLoading || !tokenBalance}
-            >
-              MAX
-            </Button>
-          </div>
-        </div>
-
-        <div className="flex items-center justify-between text-sm">
-          <span className="text-muted-foreground">Available Balance</span>
-          <div className="font-medium flex items-center gap-1">
-            {isTokenBalanceLoading ? (
-              <Loader2 className="h-4 w-4 animate-spin" />
-            ) : (
-              formatNumber(tokenBalance || 0, 2, true)
-            )}
-            <span>METRO</span>
-          </div>
-        </div>
-        {(!isContributor || !useContributorStake) && (
-          <div className="flex items-center justify-between text-sm">
-            <span className="text-muted-foreground">You'll receive</span>
-            <div className="font-medium flex items-center gap-1">
+      <TokenAmountPanel
+        id="stake-amount"
+        balanceLabel="Balance"
+        balanceValue={
+          isTokenBalanceLoading ? (
+            <Loader2 className="inline h-4 w-4 animate-spin" />
+          ) : (
+            formatNumber(tokenBalance || 0, 2, true)
+          )
+        }
+        amountValue={stakeAmount}
+        onAmountChange={(e) => setStakeAmount(e.target.value)}
+        onMaxClick={handleMaxStake}
+        onPercentageClick={handleStakePercentage}
+        maxDisabled={isTokenBalanceLoading || !tokenBalance}
+        token={MetroToken}
+        helper={
+          (!isContributor || !useContributorStake) && (
+            <>
+              You&apos;ll receive:{" "}
               {isEstimatingXMetro ? (
-                <Loader2 className="h-4 w-4 animate-spin" />
+                <Loader2 className="inline h-4 w-4 animate-spin" />
               ) : (
                 formatNumber(estimatedXMetroAmount || 0, 2, true)
-              )}
-              <span>xMETRO</span>
-            </div>
-          </div>
-        )}
-      </div>
+              )}{" "}
+              xMETRO
+            </>
+          )
+        }
+      />
       {amountError && <p className="text-sm text-destructive">{amountError}</p>}
       <ButtonWithApprove
         token={MetroToken}
         amount={stakeAmount || "0.000001"}
         spender={xMetroToken.address}
         chainId={xMetroToken.chainId}
-        onAction={stake}
+        onAction={() => setStakeConfirmOpen(true)}
         actionLoading={staking}
         actionDisabled={isStakeDisabled}
         actionText="Stake"
         approveText="Approve METRO"
         isMax={true}
+      />
+      <StakeConfirmDialog
+        open={stakeConfirmOpen}
+        onOpenChange={setStakeConfirmOpen}
+        metroAmountLabel={formatNumber(stakeAmount || 0, 2, true)}
+        xMetroAmountLabel={
+          estimatedXMetroAmount
+            ? formatNumber(estimatedXMetroAmount, 2, true)
+            : null
+        }
+        isEstimatingXMetro={isEstimatingXMetro}
+        onConfirm={stake}
+        confirming={staking}
       />
     </div>
   );

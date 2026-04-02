@@ -14,3 +14,5 @@ const baseChain: Chain = {
 };
 
 export default [mainnet, baseChain] as Chain[];
+
+export const CURRENT_CHAIN = baseChain;

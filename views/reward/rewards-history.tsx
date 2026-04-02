@@ -1,19 +1,11 @@
 "use client";
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Badge } from "@/components/ui/badge";
-import {
-  Pagination,
-  PaginationContent,
-  PaginationItem,
-  PaginationLink,
-  PaginationNext,
-  PaginationPrevious,
-  PaginationEllipsis
-} from "@/components/ui/pagination";
-import { History, ExternalLink, Loader2, AlertCircle } from "lucide-react";
+import { ExternalLink, Loader2, AlertCircle } from "lucide-react";
 import useRewardsHistory from "@/hooks/use-rewards-history";
 import { formatNumber } from "@/utils/format-number";
+import { CURRENT_CHAIN } from "@/config/chains";
 
 /**
  * Format transaction hash for display
@@ -40,54 +32,11 @@ function formatDate(dateString: string | number | Date): string {
 /**
  * Get explorer URL for transaction hash
  */
+
 function getExplorerUrl(txHash: string): string {
-  return `https://basescan.org/tx/${txHash}`;
-}
-
-/**
- * Generate page numbers for pagination
- */
-function generatePageNumbers(
-  currentPage: number,
-  totalPages: number
-): (number | "ellipsis")[] {
-  const pages: (number | "ellipsis")[] = [];
-  const maxVisible = 5;
-
-  if (totalPages <= maxVisible) {
-    // Show all pages if total pages is less than max visible
-    for (let i = 1; i <= totalPages; i++) {
-      pages.push(i);
-    }
-  } else {
-    // Always show first page
-    pages.push(1);
-
-    if (currentPage <= 3) {
-      // Show first few pages
-      for (let i = 2; i <= 4; i++) {
-        pages.push(i);
-      }
-      pages.push("ellipsis");
-      pages.push(totalPages);
-    } else if (currentPage >= totalPages - 2) {
-      // Show last few pages
-      pages.push("ellipsis");
-      for (let i = totalPages - 3; i <= totalPages; i++) {
-        pages.push(i);
-      }
-    } else {
-      // Show pages around current page
-      pages.push("ellipsis");
-      for (let i = currentPage - 1; i <= currentPage + 1; i++) {
-        pages.push(i);
-      }
-      pages.push("ellipsis");
-      pages.push(totalPages);
-    }
-  }
-
-  return pages;
+  return CURRENT_CHAIN?.blockExplorers?.default
+    ? `${CURRENT_CHAIN.blockExplorers.default.url}/tx/${txHash}`
+    : "";
 }
 
 export function RewardsHistory() {
@@ -98,54 +47,65 @@ export function RewardsHistory() {
     totalPages,
     isLoading,
     error,
-    nextPage,
-    prevPage,
-    goToPage
+    nextPage
   } = useRewardsHistory(10);
+  const [loadedRecords, setLoadedRecords] = useState(records);
+  const loadMoreRef = useRef<HTMLDivElement | null>(null);
 
-  /**
-   * Handle page click
-   */
-  const handlePageClick = async (
-    e: React.MouseEvent<HTMLAnchorElement>,
-    page: number
-  ) => {
-    e.preventDefault();
-    await goToPage(page);
-  };
+  useEffect(() => {
+    if (currentPage <= 1) {
+      setLoadedRecords(records);
+      return;
+    }
 
-  /**
-   * Handle previous page click
-   */
-  const handlePrevClick = async (e: React.MouseEvent<HTMLAnchorElement>) => {
-    e.preventDefault();
-    await prevPage();
-  };
+    setLoadedRecords((prev) => {
+      if (!records.length) return prev;
+      const merged = [...prev];
+      const existed = new Set(
+        prev.map((record, index) => record.id || record._id || `${index}`)
+      );
 
-  /**
-   * Handle next page click
-   */
-  const handleNextClick = async (e: React.MouseEvent<HTMLAnchorElement>) => {
-    e.preventDefault();
-    await nextPage();
-  };
+      records.forEach((record, index) => {
+        const key = record.id || record._id || `${currentPage}-${index}`;
+        if (!existed.has(key)) {
+          merged.push(record);
+        }
+      });
+
+      return merged;
+    });
+  }, [records, currentPage]);
+
+  const hasMore = useMemo(
+    () => currentPage < totalPages && loadedRecords.length < total,
+    [currentPage, totalPages, loadedRecords.length, total]
+  );
+
+  useEffect(() => {
+    if (!loadMoreRef.current || !hasMore) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const [entry] = entries;
+        if (entry?.isIntersecting && !isLoading) {
+          nextPage();
+        }
+      },
+      { rootMargin: "160px 0px" }
+    );
+
+    observer.observe(loadMoreRef.current);
+
+    return () => observer.disconnect();
+  }, [hasMore, isLoading, nextPage]);
 
   return (
-    <Card className="border-border bg-card">
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <History className="h-5 w-5 text-muted-foreground" />
-          Reward History
-          {total > 0 && (
-            <span className="ml-2 text-sm font-normal text-muted-foreground">
-              ({total} {total === 1 ? "record" : "records"})
-            </span>
-          )}
-        </CardTitle>
-      </CardHeader>
-      <CardContent>
-        {/* Loading state */}
-        {isLoading && (
+    <div className="bg-white p-[30px] mt-[30px]">
+      <div className="text-[24px] text-[#111414] font-[600]">
+        History({total})
+      </div>
+      <div className="flex flex-col gap-[8px] mt-3">
+        {isLoading && loadedRecords.length === 0 && (
           <div className="flex items-center justify-center py-12">
             <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
           </div>
@@ -160,127 +120,97 @@ export function RewardsHistory() {
         )}
 
         {/* Records list */}
-        {!isLoading && !error && (
+        {!error && (
           <>
-            <div className="space-y-3">
-              {records.length > 0 ? (
-                records.map((record, index) => {
-                  // Map API response fields to display format
-                  // Adjust these field names based on actual API response structure
-                  const txHash =
-                    record.txHash || record.tx_hash || record.hash || "";
-                  const amount = record.amount || record.reward_amount || "0";
-                  const type = record.category === 1? "claim" :record.category === 2 ? "autocompounded" : "compounded";
-                  const date =
-                    record.date || record.created_at || record.timestamp || "";
+            <div className="space-y-2">
+              {loadedRecords.length > 0
+                ? loadedRecords.map((record, index) => {
+                    // Map API response fields to display format
+                    const txHash =
+                      record.txHash || record.tx_hash || record.hash || "";
+                    const amount = record.amount || record.reward_amount || "0";
+                    const type =
+                      record.category === 1
+                        ? "claim"
+                        : record.category === 2
+                          ? "autocompounded"
+                          : "compounded";
+                    const date = record.tx_time ? record.tx_time * 1000 : "";
+                    const typeLabel =
+                      type === "claim"
+                        ? "Claimed"
+                        : type === "compounded"
+                          ? "Compounded"
+                          : "Autocompounded";
+                    const typeBadgeClassName =
+                      type === "claim"
+                        ? "border-[#12B76A]/20 bg-[#12B76A]/10 text-[#067647]"
+                        : type === "autocompounded"
+                          ? "border-[#F79009]/20 bg-[#F79009]/10 text-[#B54708]"
+                          : "border-[#7F56D9]/20 bg-[#7F56D9]/10 text-[#5925DC]";
 
-                  return (
-                    <div
-                      key={record.id || record._id || index}
-                      className="flex items-center justify-between rounded-lg border border-border bg-secondary/30 p-4"
-                    >
-                      <div className="flex items-center gap-3">
-                        <Badge
-                          variant={
-                            type === "claim" 
-                              ? "default"
-                              : "secondary"
-                          }
-                          className="capitalize"
-                        >
-                          {type === "claim"
-                            ? "Claimed"
-                            : type === "compounded"
-                            ? "Compounded"
-                            : type === "autocompounded"
-                            ? "Autocompounded"
-                            : type}
-                        </Badge>
-                        <div>
-                          <p className="font-medium">
+                    return (
+                      <div
+                        key={record.id || record._id || index}
+                        className="flex min-h-[68px] items-center justify-between rounded-[12px] border border-[#EAECF0] bg-white px-4 py-3 transition-colors hover:bg-[#F9FAFB]"
+                      >
+                        <div className="flex min-w-0 items-center gap-1">
+                          <img
+                            src="/tokens/usdc.png"
+                            alt="USDC"
+                            className="w-4 h-4"
+                          />
+                          <p className="text-sm font-semibold text-[#111827]">
                             {formatNumber(amount, 2, true)} USDC
                           </p>
-                          <p className="text-xs text-muted-foreground">
+                          <Badge
+                            variant="outline"
+                            className={`h-6 w-fit rounded-full border px-2.5 text-[11px] font-medium capitalize ${typeBadgeClassName}`}
+                          >
+                            {typeLabel}
+                          </Badge>
+                          <p className="text-xs text-[#667085]">
                             {formatDate(date)}
                           </p>
                         </div>
-                      </div>
 
-                      {txHash && (
-                        <a
-                          href={getExplorerUrl(txHash)}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="flex items-center gap-1 text-sm text-primary hover:underline"
-                        >
-                          {formatTxHash(txHash)}
-                          <ExternalLink className="h-3 w-3" />
-                        </a>
-                      )}
-                    </div>
-                  );
-                })
-              ) : (
-                <p className="py-8 text-center text-sm text-muted-foreground">
-                  No reward history yet
-                </p>
-              )}
+                        <div className="ml-4 flex shrink-0 items-center gap-3">
+                          {txHash && (
+                            <a
+                              href={getExplorerUrl(txHash)}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="flex items-center gap-1 text-xs font-medium text-[#475467] hover:text-primary hover:underline"
+                            >
+                              {formatTxHash(txHash)}
+                              <ExternalLink className="h-3 w-3" />
+                            </a>
+                          )}
+                        </div>
+                      </div>
+                    );
+                  })
+                : !isLoading && (
+                    <p className="py-8 text-center text-sm text-muted-foreground">
+                      No reward history yet
+                    </p>
+                  )}
             </div>
 
-            {/* Pagination */}
-            {totalPages > 1 && (
-              <div className="mt-6">
-                <Pagination>
-                  <PaginationContent>
-                    <PaginationItem>
-                      <PaginationPrevious
-                        onClick={handlePrevClick}
-                        href="#"
-                        className={
-                          currentPage === 1
-                            ? "pointer-events-none opacity-50"
-                            : "cursor-pointer"
-                        }
-                      />
-                    </PaginationItem>
-
-                    {generatePageNumbers(currentPage, totalPages).map(
-                      (page, index) => (
-                        <PaginationItem key={index}>
-                          {page === "ellipsis" ? (
-                            <PaginationEllipsis />
-                          ) : (
-                            <PaginationLink
-                              onClick={(e) => handlePageClick(e, page)}
-                              href="#"
-                              isActive={currentPage === page}
-                              className="cursor-pointer"
-                            >
-                              {page}
-                            </PaginationLink>
-                          )}
-                        </PaginationItem>
-                      )
-                    )}
-
-                    <PaginationItem>
-                      <PaginationNext
-                        onClick={handleNextClick}
-                        href="#"
-                        className={
-                          currentPage === totalPages
-                            ? "pointer-events-none opacity-50"
-                            : "cursor-pointer"
-                        }
-                      />
-                    </PaginationItem>
-                  </PaginationContent>
-                </Pagination>
+            {hasMore && (
+              <div ref={loadMoreRef} className="flex justify-center py-5">
+                {isLoading ? (
+                  <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
+                ) : (
+                  <span className="text-xs text-muted-foreground">
+                    Scroll to load more
+                  </span>
+                )}
               </div>
             )}
           </>
         )}
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   );
 }
